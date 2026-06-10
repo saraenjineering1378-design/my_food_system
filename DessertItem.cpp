@@ -11,7 +11,7 @@ DessertItem::DessertItem(ItemType t,int id, const std::string& name, const std::
 
 void DessertItem::display() const
 {
-    cout << "----- Dessert Item -----\n";
+    cout << "-----🍰 Dessert Item 🍰 -----\n";
     MenuItem::display();
     cout <<"sugarLevel :" << sugarLevel << endl;
     cout << "------------------------\n";

@@ -4,7 +4,7 @@
 #include "SQLiteRestaurantDAO.h"
 #include"Order.h"
 
-// تابع کمکی برای جلوگیری از ارور SQL Injection
+// tabe komaki baray jolo girri az eror 
 static std::string escapeSql(const std::string& s) {
     std::string out;
     out.reserve(s.size());
@@ -146,7 +146,7 @@ std::vector<Order*> SQLiteRestaurantDAO::getOrdersByRestaurantId(int restaurantI
             int custId = sqlite3_column_int(stmt, 1);
             int restId = sqlite3_column_int(stmt, 2);
             
-            // گرفتن متن وضعیت از دیتابیس
+            //gereftan matn vaziyat az database
             const unsigned char* statusText = sqlite3_column_text(stmt, 3);
             std::string statusStr = statusText ? reinterpret_cast<const char*>(statusText) : "Pending";
             
@@ -154,11 +154,11 @@ std::vector<Order*> SQLiteRestaurantDAO::getOrdersByRestaurantId(int restaurantI
             
             Order* o = new Order(id, custId, restId); 
             
-            // مقداردهی قیمت و وضعیت (از متدهای ستری که ساختی استفاده می‌کنیم)
+           
             o->setTotalPrice(price); 
             if (statusStr == "Preparing") o->setStatus(OrderStatus::Preparing);
             else if (statusStr == "Delivered") o->setStatus(OrderStatus::Delivered);
-            else if (statusStr == "Completed") o->setStatus(static_cast<OrderStatus>(2)); // عددِ Status رو مستقیم بده
+            else if (statusStr == "Completed") o->setStatus(static_cast<OrderStatus>(2)); 
             else if (statusStr == "Cancelled") o->setStatus(OrderStatus::Cancelled);
             else o->setStatus(OrderStatus::Pending);
 
@@ -180,12 +180,12 @@ bool SQLiteRestaurantDAO::updateOrderStatus(int orderId, std::string newStatus)
         sqlite3_bind_int(stmt, 2, orderId);
         
         if (sqlite3_step(stmt) == SQLITE_DONE) {
-            success = true; // عملیات با موفقیت انجام شد
+            success = true; 
         } else {
             std::cerr << "Error updating order status: " << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
         }
     }
     sqlite3_finalize(stmt);
-    return success; // خروجیِ وضعیت عملیات
+    return success; // khoroji vaziyat amaliyat
 }
 

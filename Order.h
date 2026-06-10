@@ -8,7 +8,7 @@
 
 enum OrderStatus { Pending, Preparing, Delivered, Completed, Cancelled };
 
-// این تابع بیرون کلاس است و باعث می‌شود ارور چاپ enum حل شود
+//biron class hast va baes mishavad erroro chap enum hal beshe
 inline std::ostream& operator<<(std::ostream& os, const OrderStatus& status) {
     switch (status) {
         case OrderStatus::Pending:   return os << "Pending";
@@ -27,7 +27,7 @@ private:
     int restaurantId;
     std::vector<MenuItem*> items;
     OrderStatus status;
-    double totalPrice;
+    double totalPrice ;
 
 public:
     Order(int orderId, int customerId, int restaurantId);

@@ -34,9 +34,9 @@ int main()
         cout << "\n=================================\n";
         cout << "   Welcome to the Food System! 🍽️\n";
         cout << "=================================\n";
-        cout << "1. Customer Portal 🍔\n";
-        cout << "2. Manager Portal 👨‍🍳\n";
-        cout << "3. Admin Portal 👑\n";
+        cout << "1. Customer Portal 👨‍👩‍👧‍👦\n";
+        cout << "2. Manager Portal 🧓\n";
+        cout << "3. Admin Portal 👨‍💻\n";
         cout << "0. Exit 🏃‍♂️\n";
         cout << "Enter your role: ";
         

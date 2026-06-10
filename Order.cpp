@@ -6,7 +6,7 @@ using namespace std;
 
 Order::Order(int orderId, int customerId, int restaurantId)
     : orderId(orderId),customerId(customerId),restaurantId(restaurantId),
-      status(OrderStatus::Pending),totalPrice(0)
+      status(OrderStatus::Pending),totalPrice(0.0)
 {
 }
 
@@ -94,18 +94,22 @@ void Order::displayOrderDetails() const
     cout << "\nTotal Price: " << totalPrice << endl;
 }
 
-std::string Order::statusToString() const {
-    switch (this->status) {
-        case OrderStatus::Pending:   return "Pending";
-        case OrderStatus::Preparing: return "Preparing";
-        case OrderStatus::Delivered: return "Delivered";
-        case OrderStatus::Completed: return "Completed";
-        case OrderStatus::Cancelled: return "Cancelled";
-        default: return "Unknown";
+std::string Order::statusToString() const
+{
+    switch (status)
+    {
+        case OrderStatus::Pending:
+            return "Pending";
+        case OrderStatus::Preparing:
+            return "Preparing";
+        case OrderStatus::Delivered:
+            return "Delivered";
+        case OrderStatus::Cancelled:
+            return "Cancelled";
+        default:
+            return "Unknown";
     }
 }
-
-
 const std::vector<MenuItem*>& Order::getItems() const 
 {
     return items;
@@ -115,8 +119,8 @@ void Order::setStatus(OrderStatus newStatus)
     status = newStatus;
 }
 
- 
-void Order::setTotalPrice(double price) 
+void Order::setTotalPrice(double price)
+
 {
     totalPrice = price;
 }

@@ -7,20 +7,20 @@
 
 void SQLiteCustomerDAO::addCustomer(Customer* customer)
 {
-    // ساخت کوئری با رعایت دقیق پرانتزها و کوتیشن‌ها
+    // sakht query
     
 std::string sql = "INSERT INTO Customers (name, walletBalance, password) VALUES ('" +
                   DatabaseManager::escapeSql(customer->getName()) + "', " + 
                   std::to_string(customer->getWallet()) + ", '" + 
                   DatabaseManager::escapeSql(customer->getPassword()) + "');";;
-    // اجرای کوئری
+    // ejray query
     if (!dbManager.executeQuery(sql)) 
     {
         std::cerr << "❌ addCustomer failed\n";
         return;
     }
 
-    // گرفتن ID جدید
+    //id jadid gereftan
     int newId = dbManager.getLastInsertId();
     customer->setCustomerId(newId);
 }
@@ -36,6 +36,7 @@ std::vector<Customer*> SQLiteCustomerDAO::getAllCustomers() const
         {
        
 Customer* c = new Customer(
+    &this->dbManager,
     std::stoi(row.at("id")),
     row.at("name"),
     std::atof(row.at("walletBalance").c_str()), 
@@ -56,18 +57,19 @@ Customer* SQLiteCustomerDAO::findCustomerById(int id) const
     
     auto& row = rows[0];
 return new Customer(
+    &this->dbManager,
     std::stoi(row.at("id")),
     row.at("name"),
     std::atof(row.at("walletBalance").c_str()),
-    row.at("password") // پسورد را اینجا هم اضافه کن
+    row.at("password") 
 );
 }
 void SQLiteCustomerDAO::updateWallet(int customerId, double newBalance) {
-    // 🔹 نام ستون دقیقاً به walletBalance اصلاح شد
+    
     std::string sql = "UPDATE Customers SET walletBalance = " + std::to_string(newBalance) + " WHERE id = " + std::to_string(customerId) + ";";
     char* errMsg = nullptr;
     
-    // 🔹 پوینتر دیتابیس را از dbManager شما بیرون می‌کشیم
+   
     sqlite3* db = dbManager.getDatabase(); 
     
     int rc = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errMsg);

@@ -1,11 +1,11 @@
 #include "Customer.h"
 #include <iostream>
 #include "MenuItem.h"
-#include "IOrderDAO.h"
+#include "SQLiteOrderDAO.h"
 
 
 
-Customer::Customer(int CustomerId, std::string name, double Wallet, std::string password)
+Customer::Customer(DatabaseManager* db, int CustomerId, std::string name, double Wallet, std::string password)
     : CustomerID(CustomerId), name(name), Wallet(Wallet), password(password)
 {
 }
@@ -13,6 +13,12 @@ Customer::Customer(int CustomerId, std::string name, double Wallet, std::string 
 
 Customer::~Customer()
 {
+
+/* for (size_t i = 0; i < OrderHistory.size(); ++i) 
+    {
+        delete OrderHistory[i]; //azad kardan hafeze har sefaresh
+    }
+    *///chon delete ro be memoryorderdao sepordim
     OrderHistory.clear();
 }
 
@@ -41,11 +47,6 @@ void Customer::setCustomerId(int id)
 {
     CustomerID = id;
 }
-
-void Customer::setWallet(double newBalance) 
-{
-    this-> Wallet = newBalance;
-} 
 
 
 
@@ -80,31 +81,30 @@ void Customer::addOrderToHistory(Order* order)
 }
 
 
-
-void Customer::displayOrderHistory() {
-     //pak sazi list ghabli baray jologiri az tekrar dade ha 
-    for (auto order : OrderHistory) {
-        delete order; 
+// +item be sabad kharid
+void Customer::addToCart(MenuItem* item) {
+    if (item != nullptr) {
+        cart.push_back(item);
     }
-    OrderHistory.clear();
+}
 
-    // daryaft list jadid az database
-    OrderHistory = IOrderDAO->getAllOrders(); 
-    
-    for (size_t i = 0; i < OrderHistory.size(); ++i) {
-        std::cout << "Order " << i + 1 << ":" << std::endl;
-        OrderHistory[i]->displayOrderDetails(); 
-        
-        OrderStatus s = OrderHistory[i]->getStatus();
-        if (s == OrderStatus::Preparing) {
-            std::cout << ">> 👨‍🍳 Restaurant is preparing your order." << std::endl;
-        } else if (s == OrderStatus::Delivered) {
-            std::cout << ">> 🚚 Your order has been delivered! Enjoy." << std::endl;
-        } else if (s == OrderStatus::Cancelled) {
-            std::cout << ">> ❌ Sorry, your order was cancelled." << std::endl;
+//mohasebe majmo factor
+double Customer::getTotal() const {
+    double total = 0.0;
+    // tak tak item hay sabad jam mizanim
+    for (MenuItem* item : cart) {
+        if (item != nullptr) {
+            total += item->getBasePrice();
         }
-        std::cout << "--------------------" << std::endl;
     }
+    return total;
+}
+
+//khali kardan sabad khaid
+void Customer::clearCart() 
+{
+    cart.clear(); 
+   
 }
 void Customer::removeFromCart(int foodId) 
 {
@@ -118,31 +118,4 @@ void Customer::removeFromCart(int foodId)
 std::vector<MenuItem*> Customer::getCart() const
 {
     return cart;
-}
-
-
-
-void Customer::addToCart(MenuItem* item) {
-    if (item != nullptr) {
-        cart.push_back(item);
-    }
-}
-
-double Customer::getTotal() const {
-    double total = 0.0;
-    for (MenuItem* item : cart) {
-        if (item != nullptr) {
-            total += item->getBasePrice();
-        }
-    }
-    return total;
-}
-
-void Customer::clearCart() {
-    cart.clear();
-}
-
-void Customer::clearOrderHistory()
-{
-    OrderHistory.clear();
 }

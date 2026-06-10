@@ -12,7 +12,7 @@ cookingTime(cookingTime), isVegetarian(isVegetarian) {}
 void FoodItem::display() const
 {
     cout << "----- Food Item -----\n";
-     std::cout << "[FOOD] ";//baes mishe befahmim toye ilst chi hast
+     std::cout << "[FOOD] ";//baes mishe befahmim toye list chi hast
     MenuItem::display();
 
     cout << "Cooking Time: " << cookingTime << " minutes\n";

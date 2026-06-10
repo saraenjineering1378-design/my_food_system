@@ -5,11 +5,12 @@
 #include <string>
 #include  "Order.h"
 #include "MenuItem.h"
+#include "DatabaseManager.h"
 
 class Customer
 {
 private:
-
+    DatabaseManager* dbManager; 
     std::string password;
     int CustomerID;
     std::string name;   
@@ -19,7 +20,7 @@ private:
 
 public:
 
-    Customer(int CustomerId, std::string name, double Wallet, std::string password = "1234");
+    Customer(DatabaseManager* db, int CustomerId, std::string name, double Wallet, std::string password = "1234");
 
     ~Customer();
 
@@ -41,7 +42,6 @@ public:
     void addFunds(double amount);   //sharj hesab        
     bool payForOrder(double amount); //pardakht sefaresh
     void addOrderToHistory(Order* order);  //ezafe kardan be history 
-    void displayOrderHistory();     //namayesh list sefareshat
 
     void addToCart(MenuItem* item);//ghesmat sabad kharid
     double getTotal() const;

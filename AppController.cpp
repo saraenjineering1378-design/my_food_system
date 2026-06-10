@@ -258,11 +258,11 @@ void AppController::showCustomerMenu()
     while (choice != 5) 
     {
         std::cout << "\n--- Customer Panel ---\n";
-        std::cout << "Your Current Balance: $" << currentCustomer->getWallet() << "\n";//namayesh mojodi kifpol
-        std::cout << "1. View Restaurant Menu\n";
-        std::cout << "2. Place Order\n";
-        std::cout << "3. View Order History\n";
-        std::cout << "4. Charge Wallet\n"; 
+        std::cout << "Your Current Balance: 🧮$" << currentCustomer->getWallet() << "\n";//namayesh mojodi kifpol
+        std::cout << "1. View Restaurant Menu🛎\n";
+        std::cout << "2. Place Order🎰\n";
+        std::cout << "3. View Order History🛍\n";
+        std::cout << "4. Charge Wallet💵\n"; 
         std::cout << "5. Back to Main Menu\n";
         std::cout << "Select option: ";
         std::cin >> choice;
@@ -411,9 +411,10 @@ void AppController::showCustomerMenu()
 
 
             case 3:
-                currentCustomer->displayOrderHistory();
-                break;
-            
+                
+                 viewOrderHistory(); 
+                 break;
+
             case 4: 
             {
                 double amount;
@@ -1119,7 +1120,7 @@ bool AppController::customerSignup()
     std::getline(std::cin, password);
 
     // sakht moshtari
-    Customer* newCustomer = new Customer(0, name, 0.0f, password);
+    Customer* newCustomer = new Customer(&dbManager,0,  name, 0.0f, password);
     
     if (customerDAO) {
         customerDAO->addCustomer(newCustomer);
@@ -1318,3 +1319,42 @@ void AppController::manageRestaurantActivation()
         std::cout << "❌ Restaurant not found!\n";
     }
 }
+
+
+
+void AppController::viewOrderHistory() 
+{
+    if (currentCustomer == nullptr) {
+        std::cout << "❌ Please login first to view your order history!" << std::endl;
+        return;
+    }
+
+    std::cout << "\n===================================" << std::endl;
+    std::cout << "  Order History for " << currentCustomer->getName() << " 📜" << std::endl;
+    std::cout << "===================================" << std::endl;
+    std::cout << " 🍗🍖🌭🍔🍟🍕🍱🥙🧆🌮🌯🫔🥘🥗"<< std::endl;
+
+    //khandan be sorat zende az database
+    std::vector<Order*> allOrders = orderDAO->getAllOrders(); 
+    int orderCount = 0;
+
+    for (size_t i = 0; i < allOrders.size(); ++i) {
+        if (allOrders[i] != nullptr && allOrders[i]->getCustomerId() == currentCustomer->getCustomerId()) {
+            
+            orderCount++;
+            std::cout << "📦 Order " << orderCount << ":" << std::endl;
+            
+            // chap joziyat
+            allOrders[i]->displayOrderDetails(); 
+            
+            std::cout << "-----------------------------------" << std::endl;
+        }
+    }
+
+    if (orderCount == 0) {
+        std::cout << "You haven't placed any orders yet! 🍔" << std::endl;
+    }
+    std::cout << "===================================" << std::endl;
+}
+
+

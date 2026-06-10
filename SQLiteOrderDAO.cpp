@@ -7,16 +7,17 @@
 SQLiteOrderDAO::SQLiteOrderDAO(DatabaseManager& manager)
     : dbManager(manager) {}
 
+
+
 void SQLiteOrderDAO::loadOrderItems(Order* order) {
-    if (!order || !menuItemDAO) {
+    if (!order) {
         return;
     }
 
     std::string sql = "SELECT menuItemId, quantity FROM OrderItems WHERE orderId = ?;";
-    sqlite3_stmt* stmt;
+    sqlite3_stmt* stmt = nullptr;
 
     if (sqlite3_prepare_v2(dbManager.getDatabase(), sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
-        std::cerr << "Failed to prepare statement for loading order items: " << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
         return;
     }
 
@@ -27,14 +28,27 @@ void SQLiteOrderDAO::loadOrderItems(Order* order) {
         int quantity = sqlite3_column_int(stmt, 1);
 
         
-        MenuItem* item = menuItemDAO->findMenuItemById(menuItemId);
-        if (item) 
-        {
+        std::string itemSql = "SELECT name, description, basePrice, isAvailable, type FROM MenuItems WHERE id = ?;";
+        sqlite3_stmt* itemStmt = nullptr;
+        
+        if (sqlite3_prepare_v2(dbManager.getDatabase(), itemSql.c_str(), -1, &itemStmt, nullptr) == SQLITE_OK) {
+            sqlite3_bind_int(itemStmt, 1, menuItemId);
             
-            for (int i = 0; i < quantity; ++i) 
-            {
-                order->addItem(item);
+            if (sqlite3_step(itemStmt) == SQLITE_ROW) {
+                std::string name = reinterpret_cast<const char*>(sqlite3_column_text(itemStmt, 0));
+                std::string desc = reinterpret_cast<const char*>(sqlite3_column_text(itemStmt, 1));
+                double basePrice = sqlite3_column_double(itemStmt, 2);
+                bool isAvailable = sqlite3_column_int(itemStmt, 3) != 0;
+                int typeInt = sqlite3_column_int(itemStmt, 4);
+                
+                
+                MenuItem* item = new MenuItem(static_cast<ItemType>(typeInt), menuItemId, name, desc, basePrice, isAvailable);
+                
+                for (int i = 0; i < quantity; ++i) {
+                    order->addItem(item);
+                }
             }
+            sqlite3_finalize(itemStmt);
         }
     }
     sqlite3_finalize(stmt);
@@ -48,11 +62,11 @@ bool SQLiteOrderDAO::addOrder(Order* order)
     std::string sqlOrder = "INSERT INTO Orders (customerId, restaurantId, totalPrice, status, orderDate) VALUES (?, ?, ?, ?, datetime('now'));";
     sqlite3_stmt* stmt = nullptr;
 
-    // ۱. ثبت سفارش اصلی در جدول Orders
+    // sabt dar database
     if (sqlite3_prepare_v2(dbManager.getDatabase(), sqlOrder.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
         sqlite3_bind_int(stmt, 1, order->getCustomerId());
         sqlite3_bind_int(stmt, 2, order->getRestaurantId());
-        sqlite3_bind_double(stmt, 3, order->calculateTotalPrice()); // محاسبه قیمت کل
+        sqlite3_bind_double(stmt, 3, order->calculateTotalPrice()); // mohasebe gheymat kol
         sqlite3_bind_int(stmt, 4, static_cast<int>(order->getStatus()));
 
         if (sqlite3_step(stmt) != SQLITE_DONE) {
@@ -66,10 +80,10 @@ bool SQLiteOrderDAO::addOrder(Order* order)
     }
     sqlite3_finalize(stmt);
 
-    // ۲. گرفتن ID آخرین سفارش ثبت شده
+    // gereftan id akharin sefaresh sabt shode
     int orderId = sqlite3_last_insert_rowid(dbManager.getDatabase());
 
-    // ۳. 🔹 اصلاح باگ اصلی: ثبت تک تک غذاهای سفارش در جدول OrderItems 🔹
+    //sabt tak tak ghazahay sefaresh dar jadval 
     for (auto const& item : order->getItems()) {
         std::string sqlItems = "INSERT INTO OrderItems (orderId, menuItemId, quantity) VALUES (?, ?, 1);";
         sqlite3_stmt* itemStmt = nullptr;
@@ -84,10 +98,10 @@ bool SQLiteOrderDAO::addOrder(Order* order)
         } else {
             std::cerr << "Error preparing order item statement: " << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
         }
-        sqlite3_finalize(itemStmt); // آزاد کردن حافظه برای هر آیتم
+        sqlite3_finalize(itemStmt); //azad  kardan hafeze baray har item
     }
-
-    return true; // همه چیز با موفقیت ثبت شد
+    return true; // hame chiz ba movafaghiyat sabt shod
+    
 }
 
 
@@ -114,10 +128,10 @@ std::vector<Order*> SQLiteOrderDAO::getAllOrders()
         Order* order = new Order(id, customerId, restaurantId);
         order->updateStatus(status);
 
-        // ۱. دیتابیس غذاها را لود می‌کند تا در آرایه داخلی سفارش قرار گیرند
+        
         loadOrderItems(order);
 
-        // ۲. حالا که غذاها لود شدند، قیمت واقعی را مستقیماً از روی غذاها حساب می‌کنیم
+        
         order->calculateTotalPrice();
 
         orders.push_back(order);
@@ -192,9 +206,6 @@ std::vector<Order*> SQLiteOrderDAO::getOrdersByCustomer(int customerId)
 
     sqlite3_bind_int(stmt, 1, customerId);
 
-
-
-
     while (sqlite3_step(stmt) == SQLITE_ROW) 
     {
         int orderId = sqlite3_column_int(stmt, 0);
@@ -211,7 +222,6 @@ std::vector<Order*> SQLiteOrderDAO::getOrdersByCustomer(int customerId)
     sqlite3_finalize(stmt);
     return orders;
 }
-
 
 std::vector<Order*> SQLiteOrderDAO::getOrdersByRestaurant(int restaurantId) {
     std::vector<Order*> orders;

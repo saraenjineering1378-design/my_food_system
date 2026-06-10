@@ -24,7 +24,7 @@ private:
     std::string description;
     std::vector<MenuItem*> menu;
 
-    //std::string category;
+    
 
 
     IMenuItemDAO* menuDAO;//chon ke dige restaurant dargir dade ha nist va DAOinkaro mikone
@@ -60,11 +60,9 @@ public:
     void setName(const std::string& name);
     void setId(int id);//ezafe kardan id 
     void setAddress(const std::string& address);
-    //void setStatus(bool status);
     void setEstimatedPrepTime(int time);
     void setPhoneNumber(const std::string& phone);
     void setDescription(const std::string& description);
-    //void setCategory(const std::string& category);
     void setIsActive(bool status);
     void setPassword(const std::string& pass);
 

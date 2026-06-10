@@ -36,10 +36,7 @@ Restaurant:: Restaurant(int id, const string& name, const string& address,
     {
         return address;
     }
-/*bool Restaurant::getStatus () const
-    {
-        return isActive;
-    }*/
+
     int Restaurant::getEstimatedPrepTime() const
     {
         return estimatedPrepTime;
@@ -63,10 +60,7 @@ Restaurant:: Restaurant(int id, const string& name, const string& address,
     {
         this->address = address;
     }
-    /*void Restaurant::setStatus(bool status)
-    {
-        this->isActive = status;
-    }*/
+    
     void Restaurant::setEstimatedPrepTime(int time)
     {
         this->estimatedPrepTime = time;
@@ -80,7 +74,7 @@ Restaurant:: Restaurant(int id, const string& name, const string& address,
         this->description = description; 
     }
 
-    void Restaurant::setId(int id)//ezafe jardan id
+    void Restaurant::setId(int id)//ezafe kardan id
     {
         this->id = id;
     }
@@ -92,17 +86,17 @@ Restaurant:: Restaurant(int id, const string& name, const string& address,
     }
     MenuItem* Restaurant::findMenuItem(int itemId) const
     {
-    // 🔹 اصلاح شد: استفاده از حافظه محلی و وکتور 'menu' به جای دیتابیس برای جلوگیری از کرش
+    
     for (size_t i = 0; i < menu.size(); i++)
     {
-        // شرط ایمنی برای اینکه اگر پوینتری پوچ بود برنامه ارور ندهد
+        // age pointeri poch bod barname error nadahad
         if (menu[i] != nullptr && menu[i]->getId() == itemId)
         {
-            return menu[i]; // آیتم با موفقیت در حافظه پیدا شد
+            return menu[i]; //item peyda shod
         }
     }
     
-    return nullptr; // اگر چنین شناسه‌ای وجود نداشت، پوچ برمی‌گرداند تا برنامه با خیال راحت ادامه دهد
+    return nullptr; // age hamchin shenase nabod poch bar migardone ta barname edame peyda kone
 }
     void Restaurant::displayRestaurantInfo() const {
     cout << "\n======= Restaurant Details =======" << endl;
@@ -121,7 +115,7 @@ void Restaurant::displayMenu() const
 {
     cout << "\n--- Current Menu for " << name << " ---" << endl;
     
-    // 🔹 اصلاح شد: به جای خواندن از دیتابیس، مستقیماً از وکتور داخلی 'menu' استفاده می‌کنیم
+    
     if (menu.empty()) 
     {
         cout << "Menu is currently empty. Chef is on vacation!" << endl;
@@ -130,7 +124,7 @@ void Restaurant::displayMenu() const
     {
         for (size_t i = 0; i < menu.size(); i++)
         {
-            // 🔹 شرط ایمنی: اگر آیتم معتبر بود آن را چاپ کن
+           //age item motabar bod chapesh kon
             if (menu[i] != nullptr) 
             {
                 menu[i]->display(); 
@@ -141,12 +135,7 @@ void Restaurant::displayMenu() const
 
 Order* Restaurant::findOrderId(int orderId) const
 {
-    /*for (size_t i = 0; i < receivedOrders.size(); i++) {
-        if (receivedOrders[i]->getOrderId() == orderId) {
-            return receivedOrders[i];
-        }
-    }
-    return nullptr;*/
+    
     return orderDAO->findOrderById(orderId);
 }
 

@@ -27,7 +27,7 @@ bool SQLiteMenuItemDAO::addMenuItem(int restaurantId, MenuItem* item)
         return false;
     }
     
-    // 🔹 اصلاح باگ اصلی: دریافت آی‌دی تولید شده از دیتابیس و تنظیم آن روی شیء منو
+    //daryaft id tolid shode az database va tanzim an roy shey menu 
     int newId = dbManager.getLastInsertId(); 
     item->setId(newId); 
     
@@ -59,7 +59,7 @@ std::vector<MenuItem*> SQLiteMenuItemDAO::getMenuItemsByRestaurant(int restauran
         MenuItem* item = nullptr;
 
     
-        //bool isVeg = std::stoi(row["isVegetarian"]) != 0;
+        
         bool isVeg = false;
         if (type == 1) item = new DessertItem(ItemType::DESSERT, id, name, desc, price, available, 0.5);//polymorphism
         else if (type == 2) item = new DrinkItem(ItemType::DRINK, id, name, desc, price, available, 330.0, true);
@@ -155,7 +155,7 @@ void SQLiteMenuItemDAO::updateMenuItem(MenuItem* item) {
             std::cerr << "❌ Error updating item in the database! Details: " 
                       << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
         } else {
-            // بررسی اینکه آیا واقعاً ردیفی با این ID پیدا و ویرایش شد یا خیر
+            
             if (sqlite3_changes(dbManager.getDatabase()) > 0) {
                 std::cout << "✅ Item with ID " << item->getId() << " successfully updated in the database! 🎉" << std::endl;
             } else {
@@ -187,8 +187,8 @@ void SQLiteMenuItemDAO::removeMenuItem(int id) {
             std::cerr << "❌ Error deleting item from database: " 
                       << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
         } else {
-            // بررسی اینکه آیا واقعاً ردیفی حذف شده است یا نه
-            if (sqlite3_changes(dbManager.getDatabase()) > 0) {
+            // barrasi in ke radifi hazf shode ya na
+                    if (sqlite3_changes(dbManager.getDatabase()) > 0) {
                 std::cout << "✅ Item with ID " << id << " successfully deleted from database!" << std::endl;
             } else {
                 std::cout << "⚠️ No item found with ID " << id << " in database!" << std::endl;

@@ -83,6 +83,8 @@ public:
     
     // 🍔 CUSTOMER PORTAL LOGIN
     void customerLoginMenu();
+
+    void viewOrderHistory();
 };
 
 #endif 
