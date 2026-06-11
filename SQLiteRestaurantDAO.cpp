@@ -135,57 +135,61 @@ Restaurant* SQLiteRestaurantDAO::findRestaurantById(int id) const
 std::vector<Order*> SQLiteRestaurantDAO::getOrdersByRestaurantId(int restaurantId) const 
 {
     std::vector<Order*> orders;
-    std::string sql = "SELECT id, customerId, restaurantId, status, totalPrice FROM Orders WHERE restaurantId = ?;";
-    sqlite3_stmt* stmt;
+    const char* sql = "SELECT id, customerId, restaurantId, status, totalPrice FROM Orders WHERE restaurantId = ?;";
+    sqlite3_stmt* stmt = nullptr;
 
-    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql, -1, &stmt, nullptr) == SQLITE_OK) {
         sqlite3_bind_int(stmt, 1, restaurantId);
 
         while (sqlite3_step(stmt) == SQLITE_ROW) {
             int id = sqlite3_column_int(stmt, 0);
             int custId = sqlite3_column_int(stmt, 1);
             int restId = sqlite3_column_int(stmt, 2);
-            
-            //gereftan matn vaziyat az database
-            const unsigned char* statusText = sqlite3_column_text(stmt, 3);
-            std::string statusStr = statusText ? reinterpret_cast<const char*>(statusText) : "Pending";
-            
+            int statusInt = sqlite3_column_int(stmt, 3);      
             double price = sqlite3_column_double(stmt, 4);
-            
-            Order* o = new Order(id, custId, restId); 
-            
-           
-            o->setTotalPrice(price); 
-            if (statusStr == "Preparing") o->setStatus(OrderStatus::Preparing);
-            else if (statusStr == "Delivered") o->setStatus(OrderStatus::Delivered);
-            else if (statusStr == "Completed") o->setStatus(static_cast<OrderStatus>(2)); 
-            else if (statusStr == "Cancelled") o->setStatus(OrderStatus::Cancelled);
-            else o->setStatus(OrderStatus::Pending);
 
+            Order* o = new Order(id, custId, restId);
+            o->setTotalPrice(price);
+
+            // tabdil adad sahih b enum
+            switch (statusInt) {
+                case 1: o->setStatus(OrderStatus::Preparing); break;
+                case 2: o->setStatus(OrderStatus::Delivered); break;
+                case 3: o->setStatus(OrderStatus::Completed); break;
+                case 4: o->setStatus(OrderStatus::Cancelled); break;
+                default: o->setStatus(OrderStatus::Pending); break;
+            }
             orders.push_back(o);
         }
+    } else {
+        std::cerr << "Failed to prepare getOrdersByRestaurantId: " << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
     }
     sqlite3_finalize(stmt);
     return orders;
 }
 
-bool SQLiteRestaurantDAO::updateOrderStatus(int orderId, std::string newStatus) 
+bool SQLiteRestaurantDAO::updateOrderStatus(int orderId, int newStatus) 
 {
-    std::string sql = "UPDATE Orders SET status = ? WHERE id = ?;";
-    sqlite3_stmt* stmt;
+    sqlite3_busy_timeout(dbManager.getDatabase(), 5000);
+    const char* sql = "UPDATE Orders SET status = ? WHERE id = ?;";
+    sqlite3_stmt* stmt = nullptr;
     bool success = false;
 
-    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
-        sqlite3_bind_text(stmt, 1, newStatus.c_str(), -1, SQLITE_TRANSIENT);
+    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql, -1, &stmt, nullptr) == SQLITE_OK) {
+        sqlite3_bind_int(stmt, 1, newStatus);
         sqlite3_bind_int(stmt, 2, orderId);
         
-        if (sqlite3_step(stmt) == SQLITE_DONE) {
-            success = true; 
+        int rc = sqlite3_step(stmt);
+        if (rc == SQLITE_DONE) {
+            success = true;
         } else {
             std::cerr << "Error updating order status: " << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
         }
+    } else {
+        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
     }
+    
     sqlite3_finalize(stmt);
-    return success; // khoroji vaziyat amaliyat
+    return success;
 }
 

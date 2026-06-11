@@ -6,23 +6,35 @@
 #include <vector>
 #include <cstdlib> //baray tabe system
 #include <conio.h> //ezafe shodan baray khandan password be sorat ****
+#include <iomanip>
 
 using namespace std;
 
 
 int main() 
 {
+
+     system("chcp 65001 > nul");
+    
+    //namayesh dorost adad ha
+    std::cout << std::fixed << std::setprecision(0);
     // farsi dar windows
     system("chcp 65001 > nul");
 
-    // etesal b database
-    DatabaseManager db("food_system.db");
+   DatabaseManager db("food_system.db");
 
-    if (!db.open()) {
-        cerr << "Error: Could not open database connection. Did you break it?! 💥" << endl;
-        return 1;
-    }
+if (!db.open()) {
+    cerr << "Error: Could not open database connection." << endl;
+    return 1;
+}
 
+
+sqlite3_busy_timeout(db.getDatabase(), 5000);
+
+// bad baz shodan wal faal beshe
+if (!db.executeQuery("PRAGMA journal_mode=WAL;")) {
+    cerr << "Warning: Could not enable WAL mode." << endl;
+}
     // rah andazi va sakht jadval ha
     DatabaseInitializer::initialize(db);
     

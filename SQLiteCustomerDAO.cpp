@@ -78,7 +78,7 @@ void SQLiteCustomerDAO::updateWallet(int customerId, double newBalance) {
         std::cerr << "SQL Error updating wallet: " << errMsg << std::endl;
         sqlite3_free(errMsg);
     } else {
-        std::cout << "🌐 Wallet synced with Database!\n";
+        std::cout << "NOSH JAN 😋\n";
     }
 }
 

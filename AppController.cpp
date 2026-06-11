@@ -511,7 +511,8 @@ void AppController::runRestaurantManagerPanel(Restaurant* restaurant) //safhe mo
 void AppController::viewRestaurantOrders(Restaurant* restaurant) 
 {
     while (true) {
-        std::vector<Order*> orders = restaurantDAO->getOrdersByRestaurantId(restaurant->getId());
+        
+        std::vector<Order*> orders = orderDAO->getOrdersByRestaurant(restaurant->getId());
         
         std::cout << "\n--- Orders for " << restaurant->getName() << " ---" << std::endl;
         if (!orders.empty()) {
@@ -528,37 +529,51 @@ void AppController::viewRestaurantOrders(Restaurant* restaurant)
         int orderId; 
         std::cin >> orderId;
         
-        // pak sazi list ghabl az khoroj ya edame
         if (orderId == 0) {
             for(Order* o : orders) delete o;
             break; 
         }
 
-        std::cout << "1. Prending | 2. Delivered | 3. Completed | 4. Cancelled\nEnter choice: ";
+        // peyda kardan sefaresh entekhab shode tavasot modir
+        Order* selectedOrder = nullptr;
+        for (Order* o : orders) {
+            if (o->getOrderId() == orderId) {
+                selectedOrder = o;
+                break;
+            }
+        }
+
+        if (!selectedOrder) {
+            std::cout << "❌ Order ID not found." << std::endl;
+            for(Order* o : orders) delete o;
+            continue;
+        }
+
+        std::cout << "1. Pending | 2. Delivered | 3. Completed | 4. Cancelled\nEnter choice: ";
         int choice; 
         std::cin >> choice;
 
-        // barrasi vorodi ha
         if (choice >= 1 && choice <= 4) {
-            std::string statuses[] = {"Preparing", "Delivered", "Completed", "Cancelled"};
-            restaurantDAO->updateOrderStatus(orderId, statuses[choice-1]);
-            std::cout << "✅ Status updated successfully!" << std::endl;
-        } else {
-            std::cout << "❌ Invalid choice. Returning to list." << std::endl;
-        }
+    selectedOrder->updateStatus(static_cast<OrderStatus>(choice));
 
-        //pak sazi hafeze
+    
+if (restaurantDAO->updateOrderStatus(orderId, choice)) {
+    std::cout << "✅ Status updated successfully!" << std::endl;
+} else {
+    std::cout << "❌ Database update failed. Please try again." << std::endl;
+}
+}
+
+        // azad sazi hafeze b sorat yekja 
         for(Order* o : orders) delete o;
+        orders.clear();
         
-        // jologiri az gir kardan darhalghe soratvorod gheir ada
         if(std::cin.fail()) {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
 }
-
-
 
 
 void AppController::editRestaurantInfo(Restaurant* restaurant) 
@@ -1345,8 +1360,9 @@ void AppController::viewOrderHistory()
             std::cout << "📦 Order " << orderCount << ":" << std::endl;
             
             // chap joziyat
-            allOrders[i]->displayOrderDetails(); 
-            
+            allOrders[i]->displayOrderDetails();
+
+            std::cout << "Status: " << allOrders[i]->getStatus() << std::endl;
             std::cout << "-----------------------------------" << std::endl;
         }
     }
@@ -1356,5 +1372,4 @@ void AppController::viewOrderHistory()
     }
     std::cout << "===================================" << std::endl;
 }
-
 

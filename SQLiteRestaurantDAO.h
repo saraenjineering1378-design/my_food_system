@@ -18,7 +18,7 @@ public:
     std::vector<Restaurant*> getAllRestaurants() const override;
     void updateRestaurant(Restaurant* restaurant) override;
     std::vector<Order*> getOrdersByRestaurantId(int restaurantId) const;
-    bool updateOrderStatus(int orderId, std::string newStatus);
+    bool updateOrderStatus(int orderId, int newStatus);
 
 };
 

@@ -17,7 +17,7 @@ public:
     virtual void removeRestaurant(int id) = 0;
     virtual void updateRestaurant(Restaurant* restaurant) = 0;
     virtual std::vector<Order*> getOrdersByRestaurantId(int restaurantId) const = 0;
-    virtual bool updateOrderStatus(int orderId, std::string newStatus) = 0;
+    virtual bool updateOrderStatus(int orderId, int newStatus) = 0;
 
 
 };

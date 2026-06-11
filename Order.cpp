@@ -98,16 +98,12 @@ std::string Order::statusToString() const
 {
     switch (status)
     {
-        case OrderStatus::Pending:
-            return "Pending";
-        case OrderStatus::Preparing:
-            return "Preparing";
-        case OrderStatus::Delivered:
-            return "Delivered";
-        case OrderStatus::Cancelled:
-            return "Cancelled";
-        default:
-            return "Unknown";
+        case OrderStatus::Pending:   return "Pending";
+        case OrderStatus::Preparing: return "Preparing";
+        case OrderStatus::Delivered: return "Delivered";
+        case OrderStatus::Completed: return "Completed";   // ← این خط را اضافه کنید
+        case OrderStatus::Cancelled: return "Cancelled";
+        default: return "Unknown";
     }
 }
 const std::vector<MenuItem*>& Order::getItems() const 
