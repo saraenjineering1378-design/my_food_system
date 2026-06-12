@@ -1,8 +1,10 @@
-# Sqlite Database Files
+# Database, data, and archive files
 *.db
 *.db-journal
 *.db-wal
 *.db-shm
+*.dat
+*.zip
 # Temporary and log files
 *.tmp
 *.log
