@@ -6,6 +6,7 @@
 # Temporary and log files
 *.tmp
 *.log
+*.zip
 
 # Compiled Object and Executable files
 *.o
