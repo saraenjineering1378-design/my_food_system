@@ -20,3 +20,6 @@
 *.doc
 ~$*
 *.tmp
+
+# Test files
+test.txt
