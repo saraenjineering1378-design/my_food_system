@@ -66,14 +66,16 @@ static int callback(void* data, int argc, char** argv, char** azColName)
 {
     auto* results = static_cast<std::vector<std::map<std::string, std::string>>*>(data);
     std::map<std::string, std::string> row;
-    for (int i = 0; i < argc; i++) {
+    for (int i = 0; i < argc; i++) 
+    {
         row[azColName[i]] = argv[i] ? argv[i] : "NULL";
     }
     results->push_back(row);
     return 0;
 }
 
-std::vector<std::map<std::string, std::string>> DatabaseManager::fetchAll(const std::string& sql) const{
+std::vector<std::map<std::string, std::string>> DatabaseManager::fetchAll(const std::string& sql) const
+{
     std::vector<std::map<std::string, std::string>> results;
     char* zErrMsg = 0;
     
@@ -98,10 +100,12 @@ sqlite3* DatabaseManager::getDatabase() const
     return db;
 }
 
-std::string DatabaseManager::escapeSql(const std::string& input) {
+std::string DatabaseManager::escapeSql(const std::string& input) 
+{
     std::string result = input;
     size_t pos = 0;
-    while ((pos = result.find("'", pos)) != std::string::npos) {
+    while ((pos = result.find("'", pos)) != std::string::npos) 
+    {
         result.replace(pos, 1, "''");
         pos += 2;
     }

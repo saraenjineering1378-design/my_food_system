@@ -98,7 +98,8 @@ Restaurant:: Restaurant(int id, const string& name, const string& address,
     
     return nullptr; // age hamchin shenase nabod poch bar migardone ta barname edame peyda kone
 }
-    void Restaurant::displayRestaurantInfo() const {
+    void Restaurant::displayRestaurantInfo() const 
+    {
     cout << "\n======= Restaurant Details =======" << endl;
     cout << "ID: " << id << endl;
     cout << "Name: " << name << endl;

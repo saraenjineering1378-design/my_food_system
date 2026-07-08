@@ -8,7 +8,8 @@ bool SQLiteMenuItemDAO::addMenuItem(int restaurantId, MenuItem* item)
     int typeNum = 3;
     if (dynamic_cast<DessertItem*>(item)) typeNum = 1;
     else if (dynamic_cast<DrinkItem*>(item)) typeNum = 2;
-    else if (FoodItem* food = dynamic_cast<FoodItem*>(item)) {
+    else if (FoodItem* food = dynamic_cast<FoodItem*>(item)) 
+    {
         typeNum = 3;
     }
 
@@ -102,10 +103,12 @@ MenuItem* SQLiteMenuItemDAO::findMenuItemById(int id)
     sqlite3_stmt* stmt;
     MenuItem* item = nullptr;
 
-    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) 
+    {
         sqlite3_bind_int(stmt, 1, id);
 
-        if (sqlite3_step(stmt) == SQLITE_ROW) {
+        if (sqlite3_step(stmt) == SQLITE_ROW) 
+        {
             // estekhraj dade ha az radif peyda shode
             int itemId = sqlite3_column_int(stmt, 0);
             
@@ -121,14 +124,17 @@ MenuItem* SQLiteMenuItemDAO::findMenuItemById(int id)
             bool available = (sqlite3_column_int(stmt, 4) != 0);
             int type = sqlite3_column_int(stmt, 5);
 
-            if (type == 1) {
+            if (type == 1) 
+            {
                 //adad 0 be onvan pish farz sugurlevel
                  item = new DessertItem(ItemType::DESSERT, id, name, desc, price, available, 0);
-            } else if (type == 2) {
+            } else if (type == 2) 
+            {
                 // 0.0 و false baray volume va iscold
                 item = new DrinkItem(ItemType::DRINK, id, name, desc, price, available, 0.0, false);
 
-            } else {
+            } else 
+            {
                 
                 item = new FoodItem(itemId, name, desc, price, available, 20, false); 
             }
@@ -139,30 +145,36 @@ MenuItem* SQLiteMenuItemDAO::findMenuItemById(int id)
 }
 
 
-void SQLiteMenuItemDAO::updateMenuItem(MenuItem* item) {
+void SQLiteMenuItemDAO::updateMenuItem(MenuItem* item) 
+{
     if (!item) return;
 
     std::string sql = "UPDATE MenuItems SET name = ?, basePrice = ?, description = ? WHERE id = ?;";
     sqlite3_stmt* stmt;
     
-    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql.c_str(), -1, &stmt, 0) == SQLITE_OK) {
+    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql.c_str(), -1, &stmt, 0) == SQLITE_OK) 
+    {
         sqlite3_bind_text(stmt, 1, item->getName().c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_double(stmt, 2, item->getBasePrice());
         sqlite3_bind_text(stmt, 3, item->getDescription().c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_int(stmt, 4, item->getId());
         
-        if (sqlite3_step(stmt) != SQLITE_DONE) {
+        if (sqlite3_step(stmt) != SQLITE_DONE) 
+        {
             std::cerr << "❌ Error updating item in the database! Details: " 
                       << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
         } else {
             
-            if (sqlite3_changes(dbManager.getDatabase()) > 0) {
+            if (sqlite3_changes(dbManager.getDatabase()) > 0) 
+            {
                 std::cout << "✅ Item with ID " << item->getId() << " successfully updated in the database! 🎉" << std::endl;
-            } else {
+            } else 
+            {
                 std::cout << "⚠️+ Warning: No item found with ID " << item->getId() << " to update!" << std::endl;
             }
         }
-    } else {
+    } else 
+    {
         std::cerr << "❌ Failed to prepare update query! Details: " 
                   << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
     }
@@ -176,25 +188,31 @@ void SQLiteMenuItemDAO::updateMenuItem(MenuItem* item) {
 
 
 
-void SQLiteMenuItemDAO::removeMenuItem(int id) {
+void SQLiteMenuItemDAO::removeMenuItem(int id) 
+{
     std::string sql = "DELETE FROM MenuItems WHERE id = ?;";
     sqlite3_stmt* stmt;
     
-    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql.c_str(), -1, &stmt, 0) == SQLITE_OK) {
+    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql.c_str(), -1, &stmt, 0) == SQLITE_OK) 
+    {
         sqlite3_bind_int(stmt, 1, id);
         
-        if (sqlite3_step(stmt) != SQLITE_DONE) {
+        if (sqlite3_step(stmt) != SQLITE_DONE) 
+        {
             std::cerr << "❌ Error deleting item from database: " 
                       << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
         } else {
             // barrasi in ke radifi hazf shode ya na
-                    if (sqlite3_changes(dbManager.getDatabase()) > 0) {
+                    if (sqlite3_changes(dbManager.getDatabase()) > 0) 
+                    {
                 std::cout << "✅ Item with ID " << id << " successfully deleted from database!" << std::endl;
-            } else {
+            } else 
+            {
                 std::cout << "⚠️ No item found with ID " << id << " in database!" << std::endl;
             }
         }
-    } else {
+    } else 
+    {
         std::cerr << "❌ Failed to prepare delete query!" << std::endl;
     }
     

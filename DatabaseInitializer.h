@@ -34,9 +34,28 @@ public:
             "id INTEGER PRIMARY KEY AUTOINCREMENT, "
             "name TEXT NOT NULL, "
             "walletBalance REAL DEFAULT 0.0, "
-            "password TEXT DEFAULT '1234' "
+            "password TEXT DEFAULT '1234', "
+            "loyaltyPoints INTEGER DEFAULT 0, "
+            "membershipLevel TEXT DEFAULT 'Normal', " 
+            "badge TEXT DEFAULT 'None', "        
+            "monthlyCoupons INTEGER DEFAULT 0 "  
             ");"
-        );
+);
+
+
+      //sakht jadval dar faz dovom //jadval membershiphietory
+        queries.push_back(
+            "CREATE TABLE IF NOT EXISTS MembershipHistory ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            "customerId INTEGER, "
+            "oldLevel TEXT, "
+            "newLevel TEXT, "
+            "changeDate TEXT, "
+            "reason TEXT, "
+            "FOREIGN KEY(customerId) REFERENCES Customers(id) ON DELETE CASCADE"
+            ");"
+);
+
 
         // jadval item hay menu
         queries.push_back(
@@ -75,10 +94,38 @@ public:
             "FOREIGN KEY(menuItemId) REFERENCES MenuItems(id) ON DELETE CASCADE);"
         );
 
+
+        // jadval copen ha
+        queries.push_back(
+            "CREATE TABLE IF NOT EXISTS Coupons ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            "code TEXT UNIQUE NOT NULL, "
+            "discountPercent REAL DEFAULT 10.0, "
+            "expiryDate TEXT, "
+            "isUsed INTEGER DEFAULT 0"
+            ");"
+);
+
+        // jadval ertebat karbaran ba copen
+        queries.push_back(
+            "CREATE TABLE IF NOT EXISTS UserCoupons ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            "customerId INTEGER, "
+            "couponId INTEGER, "
+            "assignedDate TEXT, "
+            "isUsed INTEGER DEFAULT 0, "
+            "FOREIGN KEY(customerId) REFERENCES Customers(id) ON DELETE CASCADE, "
+            "FOREIGN KEY(couponId) REFERENCES Coupons(id) ON DELETE CASCADE"
+            ");"
+);
+
         // ejray tamam dastorat
-        for (const std::string& sql : queries) {
+        
+    for (const std::string& sql : queries) {
             db.executeQuery(sql);
         }
+
+        
     }
 };
 

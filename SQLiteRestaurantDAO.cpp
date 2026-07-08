@@ -5,7 +5,8 @@
 #include"Order.h"
 
 // tabe komaki baray jolo girri az eror 
-static std::string escapeSql(const std::string& s) {
+static std::string escapeSql(const std::string& s) 
+{
     std::string out;
     out.reserve(s.size());
     for (char c : s) {
@@ -55,7 +56,8 @@ void SQLiteRestaurantDAO::addRestaurant(Restaurant* restaurant)
         << (restaurant->getIsActive() ? 1 : 0) << ", '"
         << escapeSql(restaurant->getPassword()) << "');";
 
-    if (!dbManager.executeQuery(sql.str())) {
+    if (!dbManager.executeQuery(sql.str())) 
+    {
         std::cerr << "addRestaurant failed.\n";
         return;
     }
@@ -71,7 +73,8 @@ void SQLiteRestaurantDAO::updateRestaurant(Restaurant* restaurant)
     std::string sql = "UPDATE Restaurants SET name = ?, address = ?, isActive = ?, estimatedPrepTime = ?, phoneNumber = ?, description = ?, password = ? WHERE id = ?;";
     sqlite3_stmt* stmt;
 
-    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) 
+    {
         sqlite3_bind_text(stmt, 1, restaurant->getName().c_str(), -1, SQLITE_TRANSIENT);
         sqlite3_bind_text(stmt, 2, restaurant->getAddress().c_str(), -1, SQLITE_TRANSIENT);
         sqlite3_bind_int(stmt, 3, restaurant->getIsActive() ? 1 : 0);
@@ -81,7 +84,8 @@ void SQLiteRestaurantDAO::updateRestaurant(Restaurant* restaurant)
         sqlite3_bind_text(stmt, 7, restaurant->getPassword().c_str(), -1, SQLITE_TRANSIENT);
         sqlite3_bind_int(stmt, 8, restaurant->getId());
 
-        if (sqlite3_step(stmt) != SQLITE_DONE) {
+        if (sqlite3_step(stmt) != SQLITE_DONE) 
+        {
             std::cerr << "Error updating restaurant: " << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
         }
     }
@@ -93,7 +97,8 @@ void SQLiteRestaurantDAO::removeRestaurant(int id)
     std::string sql = "DELETE FROM Restaurants WHERE id = ?;";
     sqlite3_stmt* stmt;
 
-    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) 
+    {
         sqlite3_bind_int(stmt, 1, id);
         if (sqlite3_step(stmt) != SQLITE_DONE) {
             std::cerr << "Error deleting restaurant: " << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
@@ -107,10 +112,12 @@ Restaurant* SQLiteRestaurantDAO::findRestaurantById(int id) const
     sqlite3_stmt* stmt;
     Restaurant* restaurant = nullptr;
 
-    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) 
+    {
         sqlite3_bind_int(stmt, 1, id);
 
-        if (sqlite3_step(stmt) == SQLITE_ROW) {
+        if (sqlite3_step(stmt) == SQLITE_ROW) 
+        {
             const unsigned char* passText = sqlite3_column_text(stmt, 7);
             std::string password = passText ? reinterpret_cast<const char*>(passText) : "1234";
 
@@ -138,10 +145,12 @@ std::vector<Order*> SQLiteRestaurantDAO::getOrdersByRestaurantId(int restaurantI
     const char* sql = "SELECT id, customerId, restaurantId, status, totalPrice FROM Orders WHERE restaurantId = ?;";
     sqlite3_stmt* stmt = nullptr;
 
-    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql, -1, &stmt, nullptr) == SQLITE_OK) {
+    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql, -1, &stmt, nullptr) == SQLITE_OK) 
+    {
         sqlite3_bind_int(stmt, 1, restaurantId);
 
-        while (sqlite3_step(stmt) == SQLITE_ROW) {
+        while (sqlite3_step(stmt) == SQLITE_ROW) 
+        {
             int id = sqlite3_column_int(stmt, 0);
             int custId = sqlite3_column_int(stmt, 1);
             int restId = sqlite3_column_int(stmt, 2);
@@ -152,7 +161,8 @@ std::vector<Order*> SQLiteRestaurantDAO::getOrdersByRestaurantId(int restaurantI
             o->setTotalPrice(price);
 
             // tabdil adad sahih b enum
-            switch (statusInt) {
+            switch (statusInt) 
+            {
                 case 1: o->setStatus(OrderStatus::Preparing); break;
                 case 2: o->setStatus(OrderStatus::Delivered); break;
                 case 3: o->setStatus(OrderStatus::Completed); break;
@@ -161,7 +171,8 @@ std::vector<Order*> SQLiteRestaurantDAO::getOrdersByRestaurantId(int restaurantI
             }
             orders.push_back(o);
         }
-    } else {
+    } else 
+    {
         std::cerr << "Failed to prepare getOrdersByRestaurantId: " << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
     }
     sqlite3_finalize(stmt);
@@ -175,17 +186,21 @@ bool SQLiteRestaurantDAO::updateOrderStatus(int orderId, int newStatus)
     sqlite3_stmt* stmt = nullptr;
     bool success = false;
 
-    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql, -1, &stmt, nullptr) == SQLITE_OK) {
+    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql, -1, &stmt, nullptr) == SQLITE_OK) 
+    {
         sqlite3_bind_int(stmt, 1, newStatus);
         sqlite3_bind_int(stmt, 2, orderId);
         
         int rc = sqlite3_step(stmt);
-        if (rc == SQLITE_DONE) {
+        if (rc == SQLITE_DONE) 
+        {
             success = true;
-        } else {
+        } else 
+        {
             std::cerr << "Error updating order status: " << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
         }
-    } else {
+    } else 
+    {
         std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
     }
     

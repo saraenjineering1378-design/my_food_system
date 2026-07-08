@@ -101,7 +101,7 @@ std::string Order::statusToString() const
         case OrderStatus::Pending:   return "Pending";
         case OrderStatus::Preparing: return "Preparing";
         case OrderStatus::Delivered: return "Delivered";
-        case OrderStatus::Completed: return "Completed";   // ← این خط را اضافه کنید
+        case OrderStatus::Completed: return "Completed";   
         case OrderStatus::Cancelled: return "Cancelled";
         default: return "Unknown";
     }

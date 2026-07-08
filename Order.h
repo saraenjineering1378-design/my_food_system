@@ -9,7 +9,8 @@
 enum OrderStatus { Pending, Preparing, Delivered, Completed, Cancelled };
 
 //biron class hast va baes mishavad erroro chap enum hal beshe
-inline std::ostream& operator<<(std::ostream& os, const OrderStatus& status) {
+inline std::ostream& operator<<(std::ostream& os, const OrderStatus& status) 
+{
     switch (status) {
         case OrderStatus::Pending:   return os << "Pending";
         case OrderStatus::Preparing: return os << "Preparing";
@@ -20,7 +21,8 @@ inline std::ostream& operator<<(std::ostream& os, const OrderStatus& status) {
     }
 }
 
-class Order {
+class Order 
+{
 private:
     int orderId;
     int customerId;
@@ -33,7 +35,7 @@ public:
     Order(int orderId, int customerId, int restaurantId);
     ~Order();
 
-    // Getterها
+    // Getter ha
     int getOrderId() const;
     int getCustomerId() const;
     int getRestaurantId() const;

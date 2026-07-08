@@ -20,13 +20,15 @@ void FoodItem::display() const
     cout << "----------------------\n";
 
 }
-bool FoodItem::getIsVegetarian() const {
+bool FoodItem::getIsVegetarian() const 
+{
     return isVegetarian;
 }
 
 void FoodItem::setIsVegetarian(bool isVeg) 
 {
     isVegetarian = isVeg;
+    
 }
 
 

@@ -13,7 +13,8 @@ SQLiteOrderDAO::SQLiteOrderDAO(DatabaseManager& manager)
 
 
 
-void SQLiteOrderDAO::loadOrderItems(Order* order) {
+void SQLiteOrderDAO::loadOrderItems(Order* order) 
+{
     if (!order) return;
 
     // yek ja khandan dade ha
@@ -76,7 +77,8 @@ bool SQLiteOrderDAO::addOrder(Order* order)
             sqlite3_finalize(stmt);
             return false;
         }
-    } else {
+    } else 
+    {
         std::cerr << "Error preparing order statement: " << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
         return false;
     }
@@ -86,7 +88,8 @@ bool SQLiteOrderDAO::addOrder(Order* order)
     int orderId = sqlite3_last_insert_rowid(dbManager.getDatabase());
 
     //sabt tak tak ghazahay sefaresh dar jadval 
-    for (auto const& item : order->getItems()) {
+    for (auto const& item : order->getItems()) 
+    {
         std::string sqlItems = "INSERT INTO OrderItems (orderId, menuItemId, quantity) VALUES (?, ?, 1);";
         sqlite3_stmt* itemStmt = nullptr;
         
@@ -146,7 +149,8 @@ std::vector<Order*> SQLiteOrderDAO::getAllOrders()
 
 
 
-Order* SQLiteOrderDAO::findOrderById(int id) {
+Order* SQLiteOrderDAO::findOrderById(int id) 
+{
     const char* sql = "SELECT id, customerId, restaurantId, status FROM Orders WHERE id = ?;";
     sqlite3_stmt* stmt = nullptr;
     Order* order = nullptr;
@@ -176,7 +180,8 @@ Order* SQLiteOrderDAO::findOrderById(int id) {
 }
 
 
-void SQLiteOrderDAO::updateOrderStatus(Order* order) {
+void SQLiteOrderDAO::updateOrderStatus(Order* order) 
+{
     if (!order) return;
 
     sqlite3_busy_timeout(dbManager.getDatabase(), 5000); 
@@ -197,7 +202,8 @@ void SQLiteOrderDAO::updateOrderStatus(Order* order) {
 }
 
 
-std::vector<Order*> SQLiteOrderDAO::getOrdersByRestaurant(int restaurantId) {
+std::vector<Order*> SQLiteOrderDAO::getOrdersByRestaurant(int restaurantId) 
+{
     std::vector<Order*> orders;
     const char* sql = "SELECT id, customerId, restaurantId, status FROM Orders WHERE restaurantId = ?;";
     sqlite3_stmt* stmt = nullptr;
@@ -213,7 +219,8 @@ std::vector<Order*> SQLiteOrderDAO::getOrdersByRestaurant(int restaurantId) {
     struct TempOrder { int id; int custId; int restId; int status; };
     std::vector<TempOrder> tempOrders;
 
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
+    while (sqlite3_step(stmt) == SQLITE_ROW) 
+    {
         tempOrders.push_back({
             sqlite3_column_int(stmt, 0),
             sqlite3_column_int(stmt, 1),
@@ -226,7 +233,8 @@ std::vector<Order*> SQLiteOrderDAO::getOrdersByRestaurant(int restaurantId) {
     sqlite3_finalize(stmt);
 
     
-    for (const auto& t : tempOrders) {
+    for (const auto& t : tempOrders) 
+    {
         Order* order = new Order(t.id, t.custId, t.restId);
         order->updateStatus(static_cast<OrderStatus>(t.status));
         
@@ -246,7 +254,8 @@ std::vector<Order*> SQLiteOrderDAO::getOrdersByCustomer(int customerId)
     const char* sql = "SELECT id, customerId, restaurantId, status FROM Orders WHERE customerId = ?;";
     sqlite3_stmt* stmt = nullptr;
 
-    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql, -1, &stmt, nullptr) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(dbManager.getDatabase(), sql, -1, &stmt, nullptr) != SQLITE_OK) 
+    {
         std::cerr << "Failed to prepare getOrdersByCustomer: " << sqlite3_errmsg(dbManager.getDatabase()) << std::endl;
         return orders;
     }

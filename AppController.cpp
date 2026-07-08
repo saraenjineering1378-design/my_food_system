@@ -8,6 +8,7 @@
 #include "DessertItem.h"
 #include "Enums.h"
 #include "MenuItem.h"
+#include <ctime>
 
 
 
@@ -158,29 +159,34 @@ void AppController::editCurrentRestaurantInfo(Restaurant* restaurant)
                 std::cout << "✅ Name updated successfully in Database!" << std::endl;
             }
         } 
-        else if (choice == 2) {
+        else if (choice == 2) 
+        {
             std::string newAddress;
             std::cout << "Enter new restaurant address: ";
             std::getline(std::cin, newAddress);
-            if (!newAddress.empty()) {
+            if (!newAddress.empty()) 
+            {
                 restaurant->setAddress(newAddress);
                 // 🔹zakhire dar database
                 if (restaurantDAO) restaurantDAO->updateRestaurant(restaurant);
                 std::cout << "✅ Address updated successfully in Database!" << std::endl;
             }
         } 
-        else if (choice == 3) {
+        else if (choice == 3) 
+        {
             std::string newPhone;
             std::cout << "Enter new phone number: ";
             std::getline(std::cin, newPhone);
-            if (!newPhone.empty()) {
+            if (!newPhone.empty()) 
+            {
                 restaurant->setPhoneNumber(newPhone);
                 // 🔹zakhire dar database
                 if (restaurantDAO) restaurantDAO->updateRestaurant(restaurant);
                 std::cout << "✅ Phone number updated successfully in Database!" << std::endl;
             }
         } 
-        else {
+        else 
+        {
             std::cout << "❌ Invalid choice!" << std::endl;
         }
     }
@@ -211,27 +217,34 @@ void AppController::showCustomerMenu()
 
     // 🔹 load kardan menu ghaza v noshidani baray har resturan az database
     if (menuItemDAO) { 
-        for (auto* res : restaurants) {
-            if (res != nullptr) {
+        for (auto* res : restaurants) 
+        {
+            if (res != nullptr) 
+            {
                 // khandan item hay menu resturan khas az database 
                 std::vector<MenuItem*> items = menuItemDAO->getMenuItemsByRestaurant(res->getId());
                 
                 // enteghal itemha b vector dakheli khod restaurant
-                for (auto* item : items) {
-                    if (item != nullptr) {
+                for (auto* item : items) 
+                {
+                    if (item != nullptr) 
+                    {
                         res->addMenuItem(res->getId(), item);
                     }
                 }
             }
         }
     }
-
-    if (restaurants.empty()) 
-    {
-        std::cout << "Sorry! There are no restaurants available." << std::endl;
-        return;
-    }
-
+if (restaurants.empty()) 
+{
+    std::cout << "Sorry! There are no restaurants available." << std::endl;
+    std::cout << "Please ask admin to add a restaurant.\n";
+    std::cout << "Press Enter to continue...";
+    std::cin.ignore();
+    std::cin.get();
+    std::cout << "DEBUG: Returning from showCustomerMenu (empty restaurants)\n"; 
+    return;
+}
     std::cout << "\n--- Select a Restaurant ---\n"; // baray entekhab restaurant morednazar
     for (size_t i = 0; i < restaurants.size(); i++) 
     {
@@ -255,17 +268,34 @@ void AppController::showCustomerMenu()
     Restaurant* selected= restaurants[restChoice - 1];//resturan entekhab shode ro bardar
 
     int choice = 0;
-    while (choice != 5) 
+while (choice != 5) 
+{
+    std::cout << "\n--- Customer Panel ---\n";
+    std::cout << "Your Current Balance: 🧮$" << currentCustomer->getWallet() << "\n";
+    
+    // namyesh sath va emtiyza
+    std::cout << "Level: " << currentCustomer->getLevelName() 
+              << " | Points: " << currentCustomer->getLoyaltyPoints();
+    std::string displayBadge = currentCustomer->getDisplayBadge();
+    if (displayBadge != "None") 
     {
-        std::cout << "\n--- Customer Panel ---\n";
-        std::cout << "Your Current Balance: 🧮$" << currentCustomer->getWallet() << "\n";//namayesh mojodi kifpol
-        std::cout << "1. View Restaurant Menu🛎\n";
-        std::cout << "2. Place Order🎰\n";
-        std::cout << "3. View Order History🛍\n";
-        std::cout << "4. Charge Wallet💵\n"; 
-        std::cout << "5. Back to Main Menu\n";
-        std::cout << "Select option: ";
-        std::cin >> choice;
+        std::cout << " | 🏅 " << displayBadge;
+}
+    
+    int nextLevel = currentCustomer->getPointsForNextLevel();
+    if (nextLevel > 0) {
+        std::cout << " | Next Level at: " << nextLevel << " points";
+    } else {
+        std::cout << " | 🏆 Max Level!";
+    }
+    std::cout << "\n";
+    std::cout << "1. View Restaurant Menu🛎\n";
+    std::cout << "2. Place Order🎰\n";
+    std::cout << "3. View Order History🛍\n";
+    std::cout << "4. Charge Wallet💵\n"; 
+    std::cout << "5. Back to Main Menu\n";
+    std::cout << "Select option: ";
+    std::cin >> choice;
 
         switch (choice) 
         {
@@ -301,108 +331,234 @@ void AppController::showCustomerMenu()
                         std::cout << "Choose an action: ";
                         std::cin >> cartChoice;
                         
-                        if (cartChoice == 1) {
+                        if (cartChoice == 1) 
+                        {
                             int foodId;
                             std::cout << "Enter Food ID to ADD: ";
                             std::cin >> foodId;
                             
                             MenuItem* item = selected->findMenuItem(foodId);
-                            if (item) {
+                            if (item) 
+                            {
                                 int qty;
                                 std::cout << "How many? ";
                                 std::cin >> qty;
                                 if (qty > 0) {
-                                    for(int i=0; i < qty; ++i) {
+                                    for(int i=0; i < qty; ++i) 
+                                    {
                                         currentCustomer->addToCart(item);
                                     }
                                     std::cout << " " << qty << " Item(s) added to cart!\n";
-                                } else {
+                                } else 
+                                {
                                     std::cout << "❌ Quantity must be greater than zero!\n";
                                 }
-                            } else {
+                            } else 
+                            {
                                 std::cout << " ❌ Invalid Food ID!\n";
                             }
                         }
-                        else if (cartChoice == 2) {
+                        else if (cartChoice == 2) 
+                        {
                             int foodId;
                             std::cout << "Enter Food ID to REMOVE: ";
                             std::cin >> foodId;
                             currentCustomer->removeFromCart(foodId);
                             std::cout << " Item removed (if existed).\n";
                         }
-                        else if (cartChoice == 3) {
+                        else if (cartChoice == 3) 
+                        {
                             ordering = false; 
                         }
-                        else if (cartChoice == 0) {
+                        else if (cartChoice == 0) 
+                        {
                             currentCustomer->clearCart(); 
                             std::cout << "Order cancelled!\n";
                             break; 
                         }
-                        else {
+                        else 
+                        {
                             std::cout << "Invalid choice! Try again.\n";
                         }
                     }
 
-                    if (cartChoice == 0) {
+                    if (cartChoice == 0) 
+                    {
                         break; 
                     }
 
+                    
                     //bakhsh taeid 2 va sabt sefaresh
-                    double totalAmount = currentCustomer->getTotal();
-                    if (totalAmount > 0) {
-                        
-                        std::cout << "\n=========================================\n";
-                        std::cout << "       🧾 FINAL INVOICE (FAKTOR)        \n";
-                        std::cout << "=========================================\n";
-                        std::cout << "💰 Total Amount to Pay: $" << totalAmount << "\n";
-                        std::cout << "=========================================\n";
-                        
+                    double baseTotal = currentCustomer->getTotal();
+                    if (baseTotal > 0) {
+    
+                     // mohasebat takhfif 
+                    double discountPercent = currentCustomer->getLevel()->getDiscountPercent();
+                    double discountAmount = baseTotal * discountPercent;
+                    double discountedTotal = baseTotal - discountAmount;
+                    double shippingCost = currentCustomer->calculateShipping(50000); // hazine paye ersal
+                    double finalTotal = discountedTotal + shippingCost;
+                    int earnedPoints = static_cast<int>((baseTotal / 1000) * currentCustomer->getLevel()->getMultiplier());
+
+                    
+                    //ezafe kardan copoun
+                    bool hasCoupon = currentCustomer->hasAvailableCoupon();
+                    double couponDiscount = 0;
+                    double couponAmount = 0;
+
+
+                    if (hasCoupon) 
+                    {
+                        std::cout << "Do you want to use a coupon? (yes/no): ";
+                        std::string useCoupon;
+                        std::cin >> useCoupon;
+                    if (useCoupon == "yes" || useCoupon == "YES" || useCoupon == "y") 
+                    {
+                        couponDiscount = 0.10;  // 10% takhfif
+                        couponAmount = finalTotal * couponDiscount;
+                        finalTotal = finalTotal - couponAmount;
+                        currentCustomer->useCoupon();  // kahesh tedad copoun ha
+                        std::cout << "✅ Coupon applied! 10% extra discount!\n";
+                    }
+                    }
+
+    
+                    std::cout << "\n=========================================\n";
+                    std::cout << "       🧾 FINAL INVOICE (FAKTOR)        \n";
+                    std::cout << "=========================================\n";
+                    std::cout << "Level: " << currentCustomer->getLevelName() << "\n";
+                    std::cout << "Base Price: $" << baseTotal << "\n";
+                    if (discountAmount > 0) 
+                    {
+                        std::cout << "Discount (" << (discountPercent * 100) << "%): -$" << discountAmount << "\n";
+                    }
+                    std::cout << "Shipping: $" << shippingCost << "\n";
+                    if (couponAmount > 0) 
+                    {
+                        std::cout << "Coupon Discount (10%): -$" << couponAmount << "\n";  
+                    }
+                    std::cout << "Points Earned: " << earnedPoints << "\n";
+                    std::cout << "-----------------------------------------\n";
+                    std::cout << "💰 Final Total: $" << finalTotal << "\n";
+                    std::cout << "=========================================\n";
+               
                         std::string confirm;
-                        while (true) {
+                        while (true) 
+                        {
                             std::cout << "Do you want to finalize this order? (yes/no): ";
                             std::cin >> confirm;
                             if (confirm == "yes" || confirm == "YES" || confirm == "Yes" || confirm == "y" ||
-                                confirm == "no" || confirm == "NO" || confirm == "No" || confirm == "n") {
+                                confirm == "no" || confirm == "NO" || confirm == "No" || confirm == "n") 
+                                {
                                 break; 
                             }
                             
                             std::cout << "❌ Invalid input! Please enter 'yes' or 'no'.\n";
                         }
                         
-                        if (confirm == "yes" || confirm == "YES" || confirm == "Yes" || confirm == "y") {
+                        if (confirm == "yes" || confirm == "YES" || confirm == "Yes" || confirm == "y") 
+                        {
                             
                             //kasr pol az hafeze moshtari
-                            if (currentCustomer->payForOrder(totalAmount)) { //
-                                
-                                //b roz resani database moshtari ba mojodi jadid
-                                if (customerDAO) {
-                                    customerDAO->updateWallet(currentCustomer->getCustomerId(), currentCustomer->getWallet()); 
-                                }
-                                
-                                // sabt sefaresh dar database baray eslah amar admin ba enteghal ghazaha
-                                if (orderDAO) {
-                                    //sakht shey sefaresh  
-                                    Order* newOrder = new Order(0, currentCustomer->getCustomerId(), selected->getId());
+                            if (currentCustomer->payForOrder(finalTotal)) 
+                            { 
+    
+                        // beroz resani kif pol
+                        if (customerDAO) {
+                        customerDAO->updateWallet(currentCustomer->getCustomerId(), currentCustomer->getWallet()); 
+                        }
+    
+                        // ezafe kardan emtiyaz vafadari
+                        int earnedPoints = static_cast<int>((baseTotal / 1000) * currentCustomer->getLevel()->getMultiplier());
+                        currentCustomer->addPoints(earnedPoints); 
+
+                        customerDAO->updateCustomerLevelAndPoints(
+                        currentCustomer->getCustomerId(),
+                        currentCustomer->getLoyaltyPoints(), 
+                        currentCustomer->getLevelName()
+                        );
+                        //barrasi neshan karbari
+                        std::string currentBadge = currentCustomer->getBadge();
+                        std::string newBadge = currentBadge;
+
+                        // barrasi 3 sefaresh motavali
+                        std::vector<Order*> allOrders = orderDAO->getAllOrders();
+                        int consecutiveOrders = 0;
+                        for (Order* o : allOrders) 
+                        {
+                        if (o->getCustomerId() == currentCustomer->getCustomerId()) 
+                        {
+                            consecutiveOrders++;
+                        }
+                        }
+
+                        // sefaresh bad az 9 shab
+                        time_t now = time(nullptr);
+                        struct tm* localTime = localtime(&now);
+                        int currentHour = localTime->tm_hour;
+
+                        bool hasFrequentBuyer = (currentBadge.find("Frequent Buyer") != std::string::npos);
+                        bool hasNightCustomer = (currentBadge.find("Night Customer") != std::string::npos);
+
+                        // Frequent Buyer
+                        if (consecutiveOrders >= 3 && !hasFrequentBuyer) 
+                        {
+                             if (newBadge == "None") 
+                             {
+                                newBadge = "Frequent Buyer";
+                        }else 
+                        {
+                            newBadge = newBadge + ", Frequent Buyer";
+                        }
+                        }
+
+                        // Night Customer
+                        if (currentHour >= 21 && currentHour <= 23 && !hasNightCustomer) 
+                        {
+                            if (newBadge == "None") 
+                            {
+                                newBadge = "Night Customer";
+                        } else 
+                        {
+                                newBadge = newBadge + ", Night Customer";
+                        }
+                        }
+
+                        // agar neshan jadidi ezafe shod
+                        if (newBadge != currentBadge) 
+                        {
+                            currentCustomer->setBadge(newBadge);
+                        customerDAO->updateBadge(currentCustomer->getCustomerId(), newBadge);
+                        std::cout << "🏅 Congratulations! You earned the '" << newBadge << "' badge!\n";
+                        }
+                        // sabt sefaresh dar database baray eslah amar admin ba enteghal ghazaha
+                        if (orderDAO) 
+                        {
+                        //sakht shey sefaresh  
+                        Order* newOrder = new Order(0, currentCustomer->getCustomerId(), selected->getId());
                                     
-                                    //enteghal done b done item ha b sabad kharid baray mohasebe gheymat 
-                                    for (MenuItem* item : currentCustomer->getCart()) {
-                                        newOrder->addItem(item);
-                                    }
+                        //enteghal done b done item ha b sabad kharid baray mohasebe gheymat 
+                        for (MenuItem* item : currentCustomer->getCart()) 
+                        {
+                            newOrder->addItem(item);
+                        }
                                     
-                                    // zakhire dar database
-                                    orderDAO->addOrder(newOrder); 
+                        // zakhire dar database
+                        orderDAO->addOrder(newOrder); 
                                     
-                                    // ezafe kardan b tarikhche
-                                    currentCustomer->addOrderToHistory(newOrder); 
+                        // ezafe kardan b tarikhche
+                        currentCustomer->addOrderToHistory(newOrder); 
                                 }
                                 
                                 currentCustomer->clearCart(); 
                             }
                             
-                        } else {
+                        } else 
+                        {
                             std::cout << "❌ Order cancelled. Items remain in your cart.\n";
                         }
-                    } else {
+                    } else 
+                    {
                         std::cout << "Your cart is empty. No order placed.\n";
                     }
                 }
@@ -430,18 +586,21 @@ void AppController::showCustomerMenu()
                 }
 
                 // jologiri az vared kardan mabalegh manfi ya 0
-                if (amount <= 0) {
+                if (amount <= 0) 
+                {
                     std::cout << "❌ Amount must be greater than zero!\n";
                     break;
                 }
 
                 // jologiri az vared kardan mabalegh kazaei va kheyli ziyad
-                if (amount > 10000000) {
+                if (amount > 10000000) 
+                {
                     std::cout << "❌ Amount is too high! Maximum deposit at once is $10,000,000.\n";
                     break;
                 }
 
-                if (amount < 10000) {
+                if (amount < 10000) 
+                {
                     std::cout << "❌ Amount too low! Minimum deposit is $10000.\n";
                     break;
                 }
@@ -449,7 +608,8 @@ void AppController::showCustomerMenu()
                 // age sharayet dorost bod zakhire dar database
                 currentCustomer->addFunds(amount);
                 
-                if (customerDAO) {
+                if (customerDAO) 
+                {
                     customerDAO->updateWallet(currentCustomer->getCustomerId(), currentCustomer->getWallet());
                 }
                 
@@ -472,6 +632,7 @@ void AppController::showCustomerMenu()
             }
         }
     }
+    std::cout << "DEBUG: showCustomerMenu finished normally\n"; 
 }
 
 
@@ -515,13 +676,16 @@ void AppController::viewRestaurantOrders(Restaurant* restaurant)
         std::vector<Order*> orders = orderDAO->getOrdersByRestaurant(restaurant->getId());
         
         std::cout << "\n--- Orders for " << restaurant->getName() << " ---" << std::endl;
-        if (!orders.empty()) {
-            for (Order* o : orders) {
+        if (!orders.empty()) 
+        {
+            for (Order* o : orders) 
+            {
                 std::cout << "Order ID: " << o->getOrderId()
                      << " | Total: $" << o->getTotalPrice()
                      << " | Status: " << o->statusToString() << std::endl;
             }
-        } else {
+        } else 
+        {
             std::cout << "No orders found." << std::endl;
         }
 
@@ -529,7 +693,8 @@ void AppController::viewRestaurantOrders(Restaurant* restaurant)
         int orderId; 
         std::cin >> orderId;
         
-        if (orderId == 0) {
+        if (orderId == 0) 
+        {
             for(Order* o : orders) delete o;
             break; 
         }
@@ -537,13 +702,15 @@ void AppController::viewRestaurantOrders(Restaurant* restaurant)
         // peyda kardan sefaresh entekhab shode tavasot modir
         Order* selectedOrder = nullptr;
         for (Order* o : orders) {
-            if (o->getOrderId() == orderId) {
+            if (o->getOrderId() == orderId) 
+            {
                 selectedOrder = o;
                 break;
             }
         }
 
-        if (!selectedOrder) {
+        if (!selectedOrder) 
+        {
             std::cout << "❌ Order ID not found." << std::endl;
             for(Order* o : orders) delete o;
             continue;
@@ -553,22 +720,25 @@ void AppController::viewRestaurantOrders(Restaurant* restaurant)
         int choice; 
         std::cin >> choice;
 
-        if (choice >= 1 && choice <= 4) {
-    selectedOrder->updateStatus(static_cast<OrderStatus>(choice));
-
+        if (choice >= 1 && choice <= 4) 
+        {
+            selectedOrder->updateStatus(static_cast<OrderStatus>(choice));
     
-if (restaurantDAO->updateOrderStatus(orderId, choice)) {
-    std::cout << "✅ Status updated successfully!" << std::endl;
-} else {
-    std::cout << "❌ Database update failed. Please try again." << std::endl;
-}
-}
+            if (restaurantDAO->updateOrderStatus(orderId, choice)) 
+            {
+                std::cout << "✅ Status updated successfully!" << std::endl;
+            }else 
+            {
+                std::cout << "❌ Database update failed. Please try again." << std::endl;
+           }
+        }
 
         // azad sazi hafeze b sorat yekja 
         for(Order* o : orders) delete o;
         orders.clear();
         
-        if(std::cin.fail()) {
+        if(std::cin.fail()) 
+        {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
@@ -582,7 +752,8 @@ void AppController::editRestaurantInfo(Restaurant* restaurant)
     restaurants = restaurantDAO->getAllRestaurants();
     
     std::cout << "\n--- ALL THE RESTAURANTS ---" << std::endl;
-    for (size_t i = 0; i < restaurants.size(); ++i) {
+    for (size_t i = 0; i < restaurants.size(); ++i) 
+    {
         std::cout << "ID: " << restaurants[i]->getId() << " NAME: " << restaurants[i]->getName() << std::endl;
     }
 
@@ -595,32 +766,39 @@ void AppController::editRestaurantInfo(Restaurant* restaurant)
     while (std::getline(std::cin, inputStr)) 
     {
         
-        if (inputStr.empty() || inputStr == "\n" || inputStr == "\r") {
+        if (inputStr.empty() || inputStr == "\n" || inputStr == "\r") 
+        {
             continue; 
         }
-        if (inputStr == " ") {
+        if (inputStr == " ") 
+        {
             continue;
         }
         
         
-        try {
+        try 
+        {
             targetId = std::stoi(inputStr); // tabdil reshte b adad
             break; 
-        } catch (...) {
+        } catch (...)
+        {
             std::cout << "❌ Invalid Input! Please enter a valid number: ";
         }
     }
 
     // peyda kardan resturan bar asas id vared shode
     Restaurant* targetRes = nullptr;
-    for (size_t i = 0; i < restaurants.size(); ++i) {
-        if (restaurants[i]->getId() == targetId) {
+    for (size_t i = 0; i < restaurants.size(); ++i) 
+    {
+        if (restaurants[i]->getId() == targetId) 
+        {
             targetRes = restaurants[i];
             break;
         }
     }
 
-    if (!targetRes) {
+    if (!targetRes) 
+    {
         std::cout << "❌ Restaurant not found!" << std::endl;
         return;
     }
@@ -669,9 +847,11 @@ void AppController::editRestaurantInfo(Restaurant* restaurant)
                 break;
             case 4:
                 std::cout << "Enter new preparation time (minutes): ";
-                if (std::cin >> newIntValue && newIntValue > 0) {
+                if (std::cin >> newIntValue && newIntValue > 0) 
+                {
                     targetRes->setEstimatedPrepTime(newIntValue);
-                } else {
+                } else 
+                {
                     std::cout << "Invalid time!" << std::endl;
                 }
                 std::cin.ignore(10000, '\n');
@@ -693,7 +873,7 @@ void AppController::editRestaurantInfo(Restaurant* restaurant)
 }
 
 
-void AppController::runSystemAdminPanel() //system addmin
+void AppController::runSystemAdminPanel() 
 {
     int choice;
     while (true) {
@@ -704,18 +884,26 @@ void AppController::runSystemAdminPanel() //system addmin
         std::cout << "2. Activate/Deactivate Restaurants" << std::endl;
         std::cout << "3. View System Reports" << std::endl;
         std::cout << "4. Update Information" << std::endl;
-        std::cout << "5. Logout" << std::endl;
+        std::cout << "5. View Users by Level" << std::endl;        
+        std::cout << "6. Edit User Level Manually" << std::endl;    
+        std::cout << "7. View Level Change History" << std::endl;  
+        std::cout << "8. Assign Monthly Coupons\n" << std::endl;   
+        std::cout << "9. Logout" << std::endl;                      
         std::cout << "Selection: ";
         std::cin >> choice;
 
-        if (choice == 5) break;
+        if (choice == 9) break;
 
         switch (choice) 
         {
             case 1: addNewRestaurant(); break;
             case 2: manageRestaurantActivation(); break;
             case 3: viewSystemReports(); break;
-            case 4: selectAndEditRestaurant();break;
+            case 4: selectAndEditRestaurant(); break;
+            case 5: showUsersByLevel(); break;
+            case 6: editUserLevelManually(); break;
+            case 7: viewLevelChangeHistory(); break;
+            case 8: assignMonthlyCoupons(); break;
             default: std::cout << "Invalid choice" << std::endl;
         }
     }
@@ -730,7 +918,8 @@ void AppController::addNewRestaurant()
     std::cin.ignore(10000, '\n'); 
     std::getline(std::cin, name);
 
-    if (name.empty() || name == " ") {
+    if (name.empty() || name == " ") 
+    {
         std::cout << "❌ Error: Restaurant name cannot be empty!\n";
         return; 
     }
@@ -745,7 +934,8 @@ void AppController::addNewRestaurant()
     std::getline(std::cin, description);
 
     std::cout << "Enter preparation time (minutes): ";
-    while (!(std::cin >> prepTime) || prepTime <= 0) {
+    while (!(std::cin >> prepTime) || prepTime <= 0) 
+    {
         std::cout << "❌ Invalid input! Please enter a positive number for minutes: ";
         std::cin.clear();
         std::cin.ignore(10000, '\n');
@@ -798,8 +988,10 @@ void AppController::viewSystemReports() //gozareshat
     
     // mohasebe maj mo forosh
     double totalSalesAmount = 0.0;
-    for (size_t i = 0; i < allOrders.size(); ++i) {
-        if (allOrders[i]) {
+    for (size_t i = 0; i < allOrders.size(); ++i) 
+    {
+        if (allOrders[i]) 
+        {
             //mohasebe mostaghim ke 0 nashon nade
             totalSalesAmount += allOrders[i]->calculateTotalPrice(); 
         }
@@ -822,7 +1014,8 @@ void AppController::viewSystemReports() //gozareshat
                           << allOrders[i]->getTotalPrice() << " Toman" << std::endl;
             }
         }
-    } else {
+    } else 
+    {
         std::cout << "No orders registered in the system yet." << std::endl;
     }
     // -----------------------------------------------------------------
@@ -934,7 +1127,8 @@ void AppController::managerAddFoodItem(Restaurant* restaurant)
         std::cin.ignore(10000, '\n');
         newItem = new DrinkItem(ItemType::DRINK, 0, name, description, price, true, volume, isCold); 
         
-    } else { 
+    } else 
+    { 
         double sugarLevel;
         
         std::cout << "Enter Sugar Level percentage (e.g., 10 or 25.5): ";
@@ -944,7 +1138,8 @@ void AppController::managerAddFoodItem(Restaurant* restaurant)
         newItem = new DessertItem(ItemType::DESSERT, 0, name, description, price, true, sugarLevel);
     }
     
-    if (newItem) {
+    if (newItem) 
+    {
         menuItemDAO->addMenuItem(restaurant->getId(), newItem);
         std::cout << "✅ Item added successfully!" << std::endl;
     }
@@ -962,14 +1157,16 @@ void AppController::managerUpdateItem(Restaurant* restaurant)
     
     // gereftan tamam ghazahay in restuan moshakhas az database
     std::vector<MenuItem*> items = menuItemDAO->getMenuItemsByRestaurant(restaurant->getId());
-    if (items.empty()) {
+    if (items.empty()) 
+    {
         std::cout << "⚠️ Your menu is empty! Nothing to update." << std::endl;
         return;
     }
     
     // namayesh list ghazaha b hamrah id modir
     std::cout << "\n--- Available Items for Update ---" << std::endl;
-    for (size_t i = 0; i < items.size(); ++i) {
+    for (size_t i = 0; i < items.size(); ++i) 
+    {
         std::cout << "ID: " << items[i]->getId() 
                   << " | Name: " << items[i]->getName() 
                   << " | Price: " << items[i]->getBasePrice() << std::endl;
@@ -982,14 +1179,17 @@ void AppController::managerUpdateItem(Restaurant* restaurant)
     
     //peyda kardan ghazay entekhab shode dar beyn list
     MenuItem* itemToUpdate = nullptr;
-    for (auto* it : items) {
-        if (it->getId() == itemId) {
+    for (auto* it : items) 
+    {
+        if (it->getId() == itemId) 
+        {
             itemToUpdate = it;
             break;
         }
     }
     
-    if (!itemToUpdate) {
+    if (!itemToUpdate) 
+    {
         std::cout << "❌ Item not found with the given ID!" << std::endl;
         return;
     }
@@ -1019,12 +1219,14 @@ void AppController::managerRemoveItem(Restaurant* restaurant)
     
     // load kardan mostaghuim akharin vaziyat data base
     std::vector<MenuItem*> items = menuItemDAO->getMenuItemsByRestaurant(restaurant->getId());
-    if (items.empty()) {
+    if (items.empty()) 
+    {
         std::cout << "Your menu is empty!" << std::endl;
         return;
     }
     
-    for (size_t i = 0; i < items.size(); ++i) {
+    for (size_t i = 0; i < items.size(); ++i) 
+    {
         std::cout << "ID: " << items[i]->getId() << " | Name: " << items[i]->getName() << " | Price: " << items[i]->getBasePrice() << std::endl;
     }
     
@@ -1053,7 +1255,8 @@ void AppController::managerRemoveItem(Restaurant* restaurant)
 AppController::~AppController()
 {
     // azad sazi hafede resturan ha
-    for (size_t i = 0; i < restaurants.size(); ++i) {
+    for (size_t i = 0; i < restaurants.size(); ++i) 
+    {
         delete restaurants[i];
     }
     restaurants.clear();
@@ -1061,8 +1264,6 @@ AppController::~AppController()
 }
 void AppController::customerLoginMenu() 
 {
-    bool isLoggedIn = false;
-    
     while (true) 
     { 
         std::cout << "\n=========================================\n";
@@ -1074,46 +1275,46 @@ void AppController::customerLoginMenu()
         std::cout << "Enter your choice: ";
         
         int choice;
-        std::cin >> choice;
-        
-        if (std::cin.fail()) {
+        if (!(std::cin >> choice)) 
+        {
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(10000, '\n');
             std::cout << "\n❌ Voroodi namotabar! Lotfan faghat adad vared konid.\n";
             continue;
         }
 
         if (choice == 1) 
         {
-            isLoggedIn = customerLogin(); 
-            if (isLoggedIn) {
+            if (customerLogin()) 
+            {
+                showCustomerMenu();
                 
-                showCustomerMenu(); // vorod b panel moshtari
+                //paksazi
+                delete currentCustomer;
+                currentCustomer = nullptr;
                 
-                delete currentCustomer; 
-                currentCustomer = nullptr; // reset kardan baray nafar badi
-                isLoggedIn = false; 
+                // inja halghe edame peyda mikone
+                std::cout << "DEBUG: Back to customer menu loop\n";
             } 
         } 
         else if (choice == 2) 
         {
             if (customerSignup()) 
             {
-                std::cout << "\n✅ Sabt nam anjam shod! Hata mitavanid Login konid.\n";
+                std::cout << "\n✅ Sabt nam anjam shod! Hala mitavanid Login konid.\n";
             }
         }
         else if (choice == 0) 
         {
-            break; //bazgasht b menu asli va khoroj az halghe
+            std::cout << "Returning to main menu...\n";
+            break;
         } 
         else 
         {
-            std::cout << "\n❌ Entekhab eshtebah ast! Dastet khord be keyboard? Dobare emtehan kon!\n";
+            std::cout << "\n❌ Entekhab eshtebah ast!\n";
         }
     } 
 }
-
-
 bool AppController::customerSignup() 
 {
     std::string name;
@@ -1135,7 +1336,7 @@ bool AppController::customerSignup()
     std::getline(std::cin, password);
 
     // sakht moshtari
-    Customer* newCustomer = new Customer(&dbManager,0,  name, 0.0f, password);
+    Customer* newCustomer = new Customer(0, name, 0.0, password);
     
     if (customerDAO) {
         customerDAO->addCustomer(newCustomer);
@@ -1205,7 +1406,8 @@ bool AppController::customerLogin()
 
 
 
-void AppController::selectAndEditRestaurant() {
+void AppController::selectAndEditRestaurant() 
+{
     std::vector<Restaurant*> restaurants = restaurantDAO->getAllRestaurants();
     if (restaurants.empty()) {
         std::cout << "\n>>THERE ISNT ANY THING HERE TO REFRESH \n";
@@ -1240,17 +1442,20 @@ void AppController::selectAndEditRestaurant() {
     Restaurant* selectedRestaurant = nullptr;
     for (auto& restaurant : restaurants) 
     {
-        if (restaurant != nullptr && restaurant->getId() == targetId) {
+        if (restaurant != nullptr && restaurant->getId() == targetId) 
+        {
             selectedRestaurant = restaurant;
             break;
         }
     }
 
-    if (selectedRestaurant) {
+    if (selectedRestaurant) 
+    {
         // hala ke resturan ro peyda kardim tabe asli virayesh ro seda mizanim
         editRestaurantInfo(selectedRestaurant);
         std::cout << "\n>> **UPDATE FOR INFORMATION WAS SECCUSFULLY**\n";
-    } else {
+    } else 
+    {
         std::cout << "\n>>!! WE CANT FIND A RESTAURANT WHITH THIS ID!!\n";
     }
 }
@@ -1274,8 +1479,10 @@ void AppController::managerLoginMenu()
 
     // peyda kardan resturan dar list
     Restaurant* targetRest = nullptr;
-    for (size_t i = 0; i < restaurants.size(); ++i) {
-        if (restaurants[i]->getId() == restId) {
+    for (size_t i = 0; i < restaurants.size(); ++i) 
+    {
+        if (restaurants[i]->getId() == restId) 
+        {
             targetRest = restaurants[i];
             break;
         }
@@ -1288,17 +1495,21 @@ void AppController::managerLoginMenu()
         std::getline(std::cin, inputPassword); //khandan imen password
 
         // check katdan ramz obor
-        if (inputPassword == targetRest->getPassword()) {
+        if (inputPassword == targetRest->getPassword()) 
+        {
             std::cout << "✅ Login Successful! Welcome " << targetRest->getName() << " manager.\n";
             runRestaurantManagerPanel(targetRest);
-        } else {
+        } else 
+        {
             std::cout << "❌ Access Denied! Wrong password. 🛑\n";
         }
-    } else {
+    } else 
+    {
         std::cout << "❌ Restaurant not found!  👽\n";
     }
    
-    for (auto* r : restaurants) {
+    for (auto* r : restaurants) 
+    {
         delete r;
     }
     restaurants.clear();
@@ -1314,13 +1525,15 @@ void AppController::manageRestaurantActivation()
     //peyda kardan resturan dar database
     Restaurant* rest = restaurantDAO->findRestaurantById(restId);
 
-    if (rest != nullptr) {
+    if (rest != nullptr) 
+    {
         std::cout << "Restaurant: " << rest->getName() << " | Current Status: " << (rest->getIsActive() ? "Active" : "Inactive") << std::endl;
         std::cout << "Do you want to toggle status? (1 for Yes, 0 for No): ";
         int choice;
         std::cin >> choice;
 
-        if (choice == 1) {
+        if (choice == 1) 
+        {
             // taghir vaziyat dar object
             bool newStatus = !rest->getIsActive();
             rest->setIsActive(newStatus);
@@ -1339,7 +1552,8 @@ void AppController::manageRestaurantActivation()
 
 void AppController::viewOrderHistory() 
 {
-    if (currentCustomer == nullptr) {
+    if (currentCustomer == nullptr) 
+    {
         std::cout << "❌ Please login first to view your order history!" << std::endl;
         return;
     }
@@ -1353,8 +1567,10 @@ void AppController::viewOrderHistory()
     std::vector<Order*> allOrders = orderDAO->getAllOrders(); 
     int orderCount = 0;
 
-    for (size_t i = 0; i < allOrders.size(); ++i) {
-        if (allOrders[i] != nullptr && allOrders[i]->getCustomerId() == currentCustomer->getCustomerId()) {
+    for (size_t i = 0; i < allOrders.size(); ++i) 
+    {
+        if (allOrders[i] != nullptr && allOrders[i]->getCustomerId() == currentCustomer->getCustomerId()) 
+        {
             
             orderCount++;
             std::cout << "📦 Order " << orderCount << ":" << std::endl;
@@ -1367,9 +1583,184 @@ void AppController::viewOrderHistory()
         }
     }
 
-    if (orderCount == 0) {
+    if (orderCount == 0) 
+    {
         std::cout << "You haven't placed any orders yet! 🍔" << std::endl;
     }
     std::cout << "===================================" << std::endl;
 }
 
+void AppController::showUsersByLevel() 
+{
+    std::vector<Customer*> customers = customerDAO->getAllCustomers();
+    int normal = 0, silver = 0, gold = 0, vip = 0;
+    
+    for (Customer* c : customers) 
+    {
+        std::string level = c->getLevelName();
+        if (level == "Normal") normal++;
+        else if (level == "Silver") silver++;
+        else if (level == "Gold") gold++;
+        else if (level == "VIP") vip++;
+        delete c;
+    }
+    
+    std::cout << "\n========== USERS BY LEVEL ==========\n";
+    std::cout << "👤 Normal: " << normal << " users\n";
+    std::cout << "🥈 Silver: " << silver << " users\n";
+    std::cout << "🥇 Gold: " << gold << " users\n";
+    std::cout << "👑 VIP: " << vip << " users\n";
+    std::cout << "====================================\n";
+}
+
+void AppController::editUserLevelManually() 
+{
+    int customerId;
+    std::cout << "\n--- Edit User Level ---\n";
+    std::cout << "Enter Customer ID: ";
+    std::cin >> customerId;
+    
+    if (std::cin.fail()) {
+        std::cin.clear();
+        std::cin.ignore(10000, '\n');
+        std::cout << "❌ Invalid input!\n";
+        return;
+    }
+    
+    Customer* customer = customerDAO->findCustomerById(customerId);
+    if (!customer) 
+    {
+        std::cout << "❌ Customer not found!\n";
+        return;
+    }
+    
+    std::cout << "\nCurrent Level: " << customer->getLevelName() << "\n";
+    std::cout << "Current Points: " << customer->getLoyaltyPoints() << "\n";
+    std::cout << "------------------------\n";
+    std::cout << "1. Change Level\n";
+    std::cout << "2. Change Points\n";
+    std::cout << "3. Downgrade Level\n";
+    std::cout << "Enter choice: ";
+    int choice;
+    std::cin >> choice;
+    
+    std::string oldLevel = customer->getLevelName();
+    
+    if (choice == 1) {
+        std::cout << "Select new level (Normal, Silver, Gold, VIP): ";
+        std::string newLevel;
+        std::cin >> newLevel;
+        
+        IMembershipLevel* level = createLevelFromName(newLevel);
+        customer->setLevel(level);
+        customer->setLoyaltyPoints(customer->getLoyaltyPoints()); // hefz emtiyaz
+        
+        customerDAO->updateCustomerLevelAndPoints(
+            customerId,
+            customer->getLoyaltyPoints(),
+            customer->getLevelName()
+        );
+        customerDAO->addMembershipHistory(customerId, oldLevel, customer->getLevelName(), "Admin manual change");
+        std::cout << "✅ Level updated successfully!\n";
+    } 
+    else if (choice == 2) 
+    {
+        int newPoints;
+        std::cout << "Enter new points: ";
+        std::cin >> newPoints;
+        customer->setLoyaltyPoints(newPoints);
+        customer->checkAndUpgrade(); // barrasi ertegha
+        
+        customerDAO->updateCustomerLevelAndPoints(
+            customerId,
+            customer->getLoyaltyPoints(),
+            customer->getLevelName()
+        );
+        customerDAO->addMembershipHistory(customerId, oldLevel, customer->getLevelName(), "Admin points change");
+        std::cout << "✅ Points updated successfully! New level: " << customer->getLevelName() << "\n";
+    }
+    else if (choice == 3) 
+    {
+        std::string reason;
+        std::cout << "Enter reason for downgrade: ";
+        std::cin.ignore();
+        std::getline(std::cin, reason);
+        customer->downgradeLevel(reason);
+        
+        customerDAO->updateCustomerLevelAndPoints(
+            customerId,
+            customer->getLoyaltyPoints(),
+            customer->getLevelName()
+        );
+        customerDAO->addMembershipHistory(customerId, oldLevel, customer->getLevelName(), reason);
+        std::cout << "✅ Downgrade completed!\n";
+    }
+    else {
+        std::cout << "❌ Invalid choice!\n";
+    }
+    
+    delete customer;
+}
+
+void AppController::viewLevelChangeHistory() 
+{
+    std::string sql = "SELECT * FROM MembershipHistory ORDER BY changeDate DESC LIMIT 20;";
+    auto rows = dbManager.fetchAll(sql);
+    
+    std::cout << "\n========== LEVEL CHANGE HISTORY ==========\n";
+    if (rows.empty()) 
+    {
+        std::cout << "No history found.\n";
+        return;
+    }
+    
+    for (const auto& row : rows) {
+        std::cout << "Customer: " << row.at("customerId") 
+                  << " | " << row.at("oldLevel") << " → " << row.at("newLevel")
+                  << " | " << row.at("changeDate")
+                  << " | Reason: " << row.at("reason") << "\n";
+    }
+    std::cout << "===========================================\n";
+}
+void AppController::assignMonthlyCoupons() {
+    std::vector<Customer*> customers = customerDAO->getAllCustomers();
+    
+    std::cout << "DEBUG: Number of customers: " << customers.size() << "\n";
+    
+    if (customers.empty()) {
+        std::cout << "❌ No customers found!\n";
+        return;
+    }
+    
+    for (Customer* c : customers) 
+    {
+        int coupons = 0;
+        std::string level = c->getLevelName();
+        
+        if (level == "Silver" || level == "Gold") 
+        {
+            coupons = 1;
+        } else if (level == "VIP") 
+        {
+            coupons = 3;
+        }
+        
+        std::cout << "DEBUG: User: " << c->getName() 
+                  << " | ID: " << c->getCustomerId()
+                  << " | Level: " << level 
+                  << " | Coupons to assign: " << coupons << "\n";
+        
+        //beroz resani dar database
+        std::string sql = "UPDATE Customers SET monthlyCoupons = " + std::to_string(coupons) + 
+                          " WHERE id = " + std::to_string(c->getCustomerId()) + ";";
+        bool result = dbManager.executeQuery(sql);
+        std::cout << "DEBUG: Update result: " << (result ? "SUCCESS ✅" : "FAILED ❌") << "\n";
+        
+        // beroz resani dar hafeze
+        c->setMonthlyCoupons(coupons);
+        
+        delete c;
+    }
+    
+    std::cout << "✅ Monthly coupons assigned to all users!\n";
+}

@@ -80,11 +80,17 @@ public:
     void viewSystemReports();
     void selectAndEditRestaurant();
 
+    void showUsersByLevel();
+    void editUserLevelManually();
+    void viewLevelChangeHistory();
+
     
     // 🍔 CUSTOMER PORTAL LOGIN
     void customerLoginMenu();
 
     void viewOrderHistory();
+
+    void assignMonthlyCoupons(); 
 
 };
 
