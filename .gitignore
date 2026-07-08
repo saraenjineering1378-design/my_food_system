@@ -5,6 +5,7 @@
 *.db-shm
 *.dat
 *.zip
+
 # Temporary and log files
 *.tmp
 *.log
@@ -13,3 +14,9 @@
 # Compiled Object and Executable files
 *.o
 *.exe
+
+# Word/Office temporary and backup files
+*.docx
+*.doc
+~$*
+*.tmp
