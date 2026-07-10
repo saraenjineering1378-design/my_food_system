@@ -37,7 +37,7 @@ public:
     int getCustomerId() const;
     std::string getName() const;
     double getWallet() const;
-    std::string getPassword() const { return password; }
+    std::string getPassword() const; 
 
 
 

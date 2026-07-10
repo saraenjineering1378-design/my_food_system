@@ -280,7 +280,7 @@ int Customer::getPointsForNextLevel() const
     if (levelName == "Normal") return 100;
     if (levelName == "Silver") return 300;
     if (levelName == "Gold") return 700;
-    if (levelName == "VIP") return 1000;
+    if (levelName == "VIP") return 0; //*baray platinum 1000
     return 0;
 }
 

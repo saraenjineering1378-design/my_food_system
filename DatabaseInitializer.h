@@ -95,30 +95,6 @@ public:
         );
 
 
-        // jadval copen ha
-        queries.push_back(
-            "CREATE TABLE IF NOT EXISTS Coupons ("
-            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            "code TEXT UNIQUE NOT NULL, "
-            "discountPercent REAL DEFAULT 10.0, "
-            "expiryDate TEXT, "
-            "isUsed INTEGER DEFAULT 0"
-            ");"
-);
-
-        // jadval ertebat karbaran ba copen
-        queries.push_back(
-            "CREATE TABLE IF NOT EXISTS UserCoupons ("
-            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            "customerId INTEGER, "
-            "couponId INTEGER, "
-            "assignedDate TEXT, "
-            "isUsed INTEGER DEFAULT 0, "
-            "FOREIGN KEY(customerId) REFERENCES Customers(id) ON DELETE CASCADE, "
-            "FOREIGN KEY(couponId) REFERENCES Coupons(id) ON DELETE CASCADE"
-            ");"
-);
-
         // ejray tamam dastorat
         
     for (const std::string& sql : queries) {

@@ -242,7 +242,6 @@ if (restaurants.empty())
     std::cout << "Press Enter to continue...";
     std::cin.ignore();
     std::cin.get();
-    std::cout << "DEBUG: Returning from showCustomerMenu (empty restaurants)\n"; 
     return;
 }
     std::cout << "\n--- Select a Restaurant ---\n"; // baray entekhab restaurant morednazar
@@ -632,7 +631,7 @@ while (choice != 5)
             }
         }
     }
-    std::cout << "DEBUG: showCustomerMenu finished normally\n"; 
+   
 }
 
 
@@ -1070,7 +1069,6 @@ void AppController::removeMenuItemById(int id)
     }
     menuItemDAO->removeMenuItem(id);
 }
-
 void AppController::managerAddFoodItem(Restaurant* restaurant) 
 {
     if (!restaurant) return;
@@ -1097,7 +1095,7 @@ void AppController::managerAddFoodItem(Restaurant* restaurant)
     MenuItem* newItem = nullptr;
 
     if (typeChoice == 1) 
-    { // age ghaza bod
+    { 
         int cookTime;
         char vegChar;
         bool isVeg = false;
@@ -1109,10 +1107,10 @@ void AppController::managerAddFoodItem(Restaurant* restaurant)
         std::cin.ignore(10000, '\n');
         if (vegChar == 'y' || vegChar == 'Y') isVeg = true;
         
-        // sakht shey ba moshakhasat vared shoe
         newItem = new FoodItem(0, name, description, price, true, cookTime, isVeg);
         
-    } else if (typeChoice == 2) 
+    } 
+    else if (typeChoice == 2) 
     { 
         char iceChar;
         bool isCold = false;
@@ -1121,19 +1119,49 @@ void AppController::managerAddFoodItem(Restaurant* restaurant)
         std::cout << "Is it Ice/Cold Drink? (y/n): ";
         std::cin >> iceChar;
         if (iceChar == 'y' || iceChar == 'Y') isCold = true;
+
+        std::cin.ignore(10000, '\n');
         
         std::cout << "Enter Volume (e.g., 0.33 or 0.5): ";
-        std::cin >> volume;
-        std::cin.ignore(10000, '\n');
-        newItem = new DrinkItem(ItemType::DRINK, 0, name, description, price, true, volume, isCold); 
+        std::string volumeStr;
+        std::getline(std::cin, volumeStr);
         
-    } else 
+        size_t pos = volumeStr.find(',');
+        if (pos != std::string::npos) 
+        {
+            volumeStr.replace(pos, 1, ".");
+        }
+        
+        try 
+        {
+            volume = std::stod(volumeStr);
+        } catch (...) 
+        {
+            std::cout << "❌ Invalid volume! Please enter a number (e.g., 0.5).\n";
+            return;
+        }
+        
+        newItem = new DrinkItem(ItemType::DRINK, 0, name, description, price, true, volume, isCold); 
+    }
+    else 
     { 
         double sugarLevel;
         
         std::cout << "Enter Sugar Level percentage (e.g., 10 or 25.5): ";
-        std::cin >> sugarLevel;
-        std::cin.ignore(10000, '\n');
+        std::string sugarStr;
+        std::getline(std::cin, sugarStr);
+        
+        size_t pos2 = sugarStr.find(',');
+        if (pos2 != std::string::npos) {
+            sugarStr.replace(pos2, 1, ".");
+        }
+        
+        try {
+            sugarLevel = std::stod(sugarStr);
+        } catch (...) {
+            std::cout << "❌ Invalid sugar level! Please enter a number (e.g., 25.5).\n";
+            return;
+        }
         
         newItem = new DessertItem(ItemType::DESSERT, 0, name, description, price, true, sugarLevel);
     }
@@ -1144,9 +1172,6 @@ void AppController::managerAddFoodItem(Restaurant* restaurant)
         std::cout << "✅ Item added successfully!" << std::endl;
     }
 }
-
-
-
 void AppController::managerUpdateItem(Restaurant* restaurant) 
 {
     if (!restaurant) return;
@@ -1293,8 +1318,7 @@ void AppController::customerLoginMenu()
                 delete currentCustomer;
                 currentCustomer = nullptr;
                 
-                // inja halghe edame peyda mikone
-                std::cout << "DEBUG: Back to customer menu loop\n";
+              
             } 
         } 
         else if (choice == 2) 
@@ -1722,15 +1746,9 @@ void AppController::viewLevelChangeHistory()
     }
     std::cout << "===========================================\n";
 }
-void AppController::assignMonthlyCoupons() {
+void AppController::assignMonthlyCoupons() 
+{
     std::vector<Customer*> customers = customerDAO->getAllCustomers();
-    
-    std::cout << "DEBUG: Number of customers: " << customers.size() << "\n";
-    
-    if (customers.empty()) {
-        std::cout << "❌ No customers found!\n";
-        return;
-    }
     
     for (Customer* c : customers) 
     {
@@ -1744,21 +1762,10 @@ void AppController::assignMonthlyCoupons() {
         {
             coupons = 3;
         }
+        // Normal = 0 
         
-        std::cout << "DEBUG: User: " << c->getName() 
-                  << " | ID: " << c->getCustomerId()
-                  << " | Level: " << level 
-                  << " | Coupons to assign: " << coupons << "\n";
-        
-        //beroz resani dar database
-        std::string sql = "UPDATE Customers SET monthlyCoupons = " + std::to_string(coupons) + 
-                          " WHERE id = " + std::to_string(c->getCustomerId()) + ";";
-        bool result = dbManager.executeQuery(sql);
-        std::cout << "DEBUG: Update result: " << (result ? "SUCCESS ✅" : "FAILED ❌") << "\n";
-        
-        // beroz resani dar hafeze
+        customerDAO->updateMonthlyCoupons(c->getCustomerId(), coupons);
         c->setMonthlyCoupons(coupons);
-        
         delete c;
     }
     
