@@ -36,11 +36,12 @@ public:
             "walletBalance REAL DEFAULT 0.0, "
             "password TEXT DEFAULT '1234', "
             "loyaltyPoints INTEGER DEFAULT 0, "
-            "membershipLevel TEXT DEFAULT 'Normal', " 
-            "badge TEXT DEFAULT 'None', "        
-            "monthlyCoupons INTEGER DEFAULT 0 "  
+            "membershipLevel TEXT DEFAULT 'Normal', "
+            "badge TEXT DEFAULT 'None', "
+            "monthlyCoupons INTEGER DEFAULT 0, "
+            "upgradeMessageShown INTEGER DEFAULT 0 "
             ");"
-);
+        );
 
 
       //sakht jadval dar faz dovom //jadval membershiphietory

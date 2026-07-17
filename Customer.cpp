@@ -8,15 +8,17 @@
 
 Customer::Customer(int CustomerId, std::string name, double Wallet, std::string password, int monthlyCoupons)
     : CustomerID(CustomerId), name(name), Wallet(Wallet), password(password),
-      loyaltyPoints(0), currentLevel(new NormalLevel()), 
-      monthlyCoupons(monthlyCoupons), badge("None")
+      loyaltyPoints(0), currentLevel(new NormalLevel()),
+      monthlyCoupons(monthlyCoupons), badge("None"),
+      upgradeMessageShown(0)
 {
 }
 
 Customer::Customer(const Customer& other)
     : CustomerID(other.CustomerID), name(other.name), Wallet(other.Wallet), 
       password(other.password), loyaltyPoints(other.loyaltyPoints), 
-      monthlyCoupons(other.monthlyCoupons), badge(other.badge)
+      monthlyCoupons(other.monthlyCoupons), badge(other.badge),
+      upgradeMessageShown(other.upgradeMessageShown)
 {
     if (other.currentLevel) 
     {
@@ -336,4 +338,13 @@ std::string Customer::getDisplayBadge() const
     }
     
     return result.empty() ? "None" : result;
+}
+
+int Customer::getUpgradeMessageShown() const
+{
+    return upgradeMessageShown;
+}
+void  Customer::setUpgradeMessageShown(int shown)
+{
+    upgradeMessageShown = shown;
 }

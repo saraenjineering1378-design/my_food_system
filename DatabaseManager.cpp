@@ -7,13 +7,17 @@ DatabaseManager::~DatabaseManager()
     close(); 
 }
 
-bool DatabaseManager::open() 
+bool DatabaseManager::open()
 {
-    if (sqlite3_open(dbName.c_str(), &db) != SQLITE_OK) 
+    std::cout << "DEBUG: Trying to open database at: " << dbName << std::endl;
+
+    if (sqlite3_open(dbName.c_str(), &db) != SQLITE_OK)
     {
         std::cerr << "error : data base isnt open " << sqlite3_errmsg(db) << std::endl;
         return false;
     }
+
+    std::cout << "DEBUG: Database opened successfully!" << std::endl;
     return true;
 }
 

@@ -20,6 +20,7 @@ private:
     std::vector<MenuItem*> cart;//sabad kharid moshtariint 
     int monthlyCoupons;  // tedad copoun haye mahane
     std::string badge;  //neshan karbar
+    int upgradeMessageShown;  // 0 = not shown, 1 = shown
 
 
 
@@ -87,5 +88,8 @@ public:
     void setBadge(const std::string& newBadge);
     std::string getDisplayBadge() const;
     
+
+    int getUpgradeMessageShown() const;
+    void setUpgradeMessageShown(int shown);
 };
 #endif
