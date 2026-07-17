@@ -145,6 +145,11 @@ void ManagerPanelWindow::on_pushButton_add_edit_remove_items_clicked()
         // joziyat bar asas noe
         int isVegetarian = 0;
         int cookingTime = 0;
+        double volume = 0.0;
+        int isCold = 0;
+        double sugarLevel = 0.0;
+
+
 
         if (type == "Food")
         {
