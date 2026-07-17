@@ -7,17 +7,17 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    // ✅ اتصال به دیتابیس
+    //etesal be data base
     DatabaseManager db("C:/Users/User/Documents/food_system/food_system.db");
 
     if (!db.open()) {
         return 1;
     }
 
-    // ✅ ساخت جداول (اگه وجود ندارن)
+    //sakht jadavel age vojod nadaran
     DatabaseInitializer::initialize(db);
 
-    // ✅ اجرای منوی اصلی
+    //ejraye menu asli
     MainWindow menu;
     menu.show();
 
