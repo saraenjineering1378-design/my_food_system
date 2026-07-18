@@ -160,21 +160,28 @@ void CustomerPanelWindow::updateLoyaltyDisplay()
     auto historyRows = db.fetchAll(historySql);
 
     QString changeType = "";
-    if (!historyRows.empty()) {
+    if (!historyRows.empty()) 
+    {
         std::string reason = historyRows[0].at("reason");
-        if (reason.find("Admin") != std::string::npos)
+        if (reason.find("Admin") != std::string::npos) 
         {
             changeType = " (by Admin 👑)";
-        } else if (reason == "Auto upgrade")
+        } else if (reason == "Auto upgrade") 
         {
             changeType = " (by System 🚀)";
-        } else if (reason.find("downgrade") != std::string::npos)
+        } else if (reason.find("downgrade") != std::string::npos) 
         {
             changeType = " (by Admin ⬇️)";
         }
     }
 
-    // namayesh point
+    //age tarikhche nabod pish farz addmin bezar
+    if (changeType.isEmpty()) 
+    {
+        changeType = " (by Admin 👑)";
+    }
+
+    // namayesh
     ui->label_level->setText("🏅 Level: " + level + changeType);
     ui->label_points->setText("⭐ Points: " + QString::number(points));
 
@@ -190,10 +197,11 @@ void CustomerPanelWindow::updateLoyaltyDisplay()
         ui->label_next_level->setText("🏆 Max Level!");
     }
 
-    if (badge != "None" && !badge.isEmpty())
+    if (badge != "None" && !badge.isEmpty()) 
     {
         ui->label_badge->setText("🏷️ Badge: " + badge);
-    } else {
+    } else 
+    {
         ui->label_badge->setText("🏷️ Badge: None");
     }
 
